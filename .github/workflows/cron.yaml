@@ -10,6 +10,7 @@ on:
     paths-ignore:
       - "reports/**"
       - "README.md"
+      - "src/cache/**.json"
     branches:
       - main
   workflow_dispatch:
