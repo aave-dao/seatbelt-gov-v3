@@ -139,10 +139,8 @@ ${payload.actions
   );
   const verified = await getVerificationStatus({
     client: client,
-    // we filter out the contracts that were deployed during payload execution, as they will be unverified
-    addresses: sim.transaction.addresses.filter(
-      (addr) => !deployedOnPayload.has(addr.toLowerCase() as Address),
-    ),
+    addresses: sim.transaction.addresses,
+    deployedDuringExecution: deployedOnPayload,
     // In the future we might want to maintain our own db, so we do not need to rely on tenderly so much for contract name lookup.
     contractDb: sim.contracts.reduce(
       (acc, val) => {
