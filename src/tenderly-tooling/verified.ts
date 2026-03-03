@@ -6,7 +6,7 @@ interface GetVerificationStatusParams {
   client: Client;
   addresses: readonly Address[];
   contractDb: Record<Address, string>;
-  deployedDuringExecution?: Set<string>;
+  contractsDeployedDuringExec?: Set<string>;
   apiKey?: string;
   apiUrl?: string;
 }
@@ -40,7 +40,7 @@ export async function getVerificationStatus({
   client,
   addresses,
   contractDb = {},
-  deployedDuringExecution,
+  contractsDeployedDuringExec,
   apiKey,
   apiUrl,
 }: GetVerificationStatusParams) {
@@ -51,7 +51,7 @@ export async function getVerificationStatus({
     new?: boolean;
   }[] = [];
   for (const address of addresses) {
-    if (deployedDuringExecution?.has(address.toLowerCase())) {
+    if (contractsDeployedDuringExec?.has(address.toLowerCase())) {
       results.push({
         address,
         status: VerificationStatus.DEPLOYED_ON_EXECUTION,

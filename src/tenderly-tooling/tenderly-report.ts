@@ -140,7 +140,7 @@ ${payload.actions
   const verified = await getVerificationStatus({
     client: client,
     addresses: sim.transaction.addresses,
-    deployedDuringExecution: deployedOnPayload,
+    contractsDeployedDuringExec: deployedOnPayload,
     // In the future we might want to maintain our own db, so we do not need to rely on tenderly so much for contract name lookup.
     contractDb: sim.contracts.reduce(
       (acc, val) => {
