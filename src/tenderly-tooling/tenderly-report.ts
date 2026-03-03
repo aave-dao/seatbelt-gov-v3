@@ -134,9 +134,15 @@ ${payload.actions
     sim.transaction.addresses,
     [], // trusted addresses
   );
+  const deployedOnPayload = getContractsDeployedDuringSimulation(
+    sim.transaction.transaction_info.call_trace?.calls ?? [],
+  );
   const verified = await getVerificationStatus({
     client: client,
-    addresses: sim.transaction.addresses,
+    // we filter out the contracts that were deployed during payload execution, as they will be unverified
+    addresses: sim.transaction.addresses.filter(
+      (addr) => !deployedOnPayload.has(addr.toLowerCase() as Address),
+    ),
     // In the future we might want to maintain our own db, so we do not need to rely on tenderly so much for contract name lookup.
     contractDb: sim.contracts.reduce(
       (acc, val) => {
@@ -236,6 +242,24 @@ ${payload.actions
   }
 
   return { report, eventCache };
+}
+
+function getContractsDeployedDuringSimulation(
+  calls: { to?: string; caller_op: string; calls?: any[] }[],
+  result: Set<string> = new Set(),
+): Set<string> {
+  for (const call of calls) {
+    if (
+      (call.caller_op === "CREATE" || call.caller_op === "CREATE2") &&
+      call.to
+    ) {
+      result.add(call.to.toLowerCase());
+    }
+    if (call.calls?.length) {
+      getContractsDeployedDuringSimulation(call.calls, result);
+    }
+  }
+  return result;
 }
 
 function renderUnixTime(time: number) {
