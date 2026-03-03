@@ -6,6 +6,7 @@ interface GetVerificationStatusParams {
   client: Client;
   addresses: readonly Address[];
   contractDb: Record<Address, string>;
+  contractsDeployedDuringExec?: Set<string>;
   apiKey?: string;
   apiUrl?: string;
 }
@@ -14,6 +15,7 @@ export enum VerificationStatus {
   EOA,
   CONTRACT,
   ERROR,
+  DEPLOYED_ON_EXECUTION,
 }
 
 export function verificationStatusToString(status: VerificationStatus) {
@@ -24,6 +26,8 @@ export function verificationStatusToString(status: VerificationStatus) {
       return "Contract";
     case VerificationStatus.ERROR:
       return "Error";
+    case VerificationStatus.DEPLOYED_ON_EXECUTION:
+      return "Deployed on execution";
   }
 }
 
@@ -36,6 +40,7 @@ export async function getVerificationStatus({
   client,
   addresses,
   contractDb = {},
+  contractsDeployedDuringExec,
   apiKey,
   apiUrl,
 }: GetVerificationStatusParams) {
@@ -46,6 +51,13 @@ export async function getVerificationStatus({
     new?: boolean;
   }[] = [];
   for (const address of addresses) {
+    if (contractsDeployedDuringExec?.has(address.toLowerCase())) {
+      results.push({
+        address,
+        status: VerificationStatus.DEPLOYED_ON_EXECUTION,
+      });
+      continue;
+    }
     if (contractDb[address]) {
       results.push({
         address,
