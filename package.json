@@ -19,7 +19,7 @@
     "commander": "^11.1.0",
     "dotenv": "^16.3.1",
     "prettier": "3.5.3",
-    "prettier-plugin-solidity": "1.4.3",
+    "prettier-plugin-solidity": "2.2.1",
     "viem": "^2.45.1",
     "vitest": "^3.2.4"
   }
