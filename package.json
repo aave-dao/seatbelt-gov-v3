@@ -18,7 +18,7 @@
     "@bgd-labs/toolbox": "^0.2.20",
     "commander": "^11.1.0",
     "dotenv": "^16.3.1",
-    "prettier": "3.5.3",
+    "prettier": "3.8.1",
     "prettier-plugin-solidity": "1.4.3",
     "viem": "^2.45.1",
     "vitest": "^3.2.4"
