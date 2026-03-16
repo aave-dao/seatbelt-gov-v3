@@ -113,7 +113,7 @@ bun simulate -c 1 --payloadsController 0x1234...5678 -i 42
 
 - `-c, --chainId <chainId>` - Chain ID of the network to simulate on (required)
 - `-i, --ids <ids...>` - Payload ID(s) to simulate (comma or space separated)
-- `--payloadsController <address>` - Specific payloads controller address (optional). The supplied payloadsController must maintain an equivalent storage layout for the `payloads` compared to the Aave `PayloadsController` contract. Currently, both `PayloadsController` and `PermissionedPayloadsController` are supported.
+- `--payloadsController <address>` - Specific payloads controller address (optional). The supplied contract must be compatible with the Aave `IPayloadsControllerCore` interface, specifically it must expose `getPayloadById(uint40)` and `executePayload(uint40)`, and maintain an equivalent storage layout for the `_payloads` mapping (used for storage overrides to make payloads executable). Currently, both `PayloadsController` and `PermissionedPayloadsController` are supported.
 
 ## Modes
 
@@ -129,6 +129,11 @@ To use this mode, you need to have a Tenderly account and API key configured.
 You can use the foundry simulations for any chain that is supported by foundry.
 `Foundry mode` will do "some" state decoding, for known contracts & slots, but is less sophisticated than the tenderly version.
 In addition, `Foundry mode` will run an e2e test suite against the fork after payload execution.
+
+**Limitations**:
+
+- the "Foundry mode" state decoding, currently only works reliably for contracts available to the current project. This might improve in the future: https://github.com/foundry-rs/foundry/pull/13417
+- the "Foundry mode" applies some manual decoding, based on a known set of pools defined in [`_getPool()`](https://github.com/aave-dao/seatbelt-gov-v3/blob/main/script/E2EPayload.s.sol#L116-L134)
 
 ## Output
 
@@ -163,7 +168,9 @@ Each report includes:
 ## CI/CD flow
 
 - [cron.yaml](.github/workflows/cron.yaml): Every 2 hours, the system automatically checks for new payloads and runs simulations when necessary.
-- [trigger.yaml](.github/workflows/trigger.yaml): Allows manual triggering of simulations via GitHub Actions. Currently, [BGD Labs](https://bgdlabs.com) is operating a monitoring service that automatically triggers simulations for new payloads, but this integration can be replaced by any other indexing service.
+- [trigger.yaml](.github/workflows/trigger.yaml): Allows manual triggering of simulations via GitHub Actions.
+- Currently, [BGD Labs](https://bgdlabs.com) is operating a monitoring service that automatically triggers simulations for new payloads, but this integration can be replaced by any other indexing service.
+- For the github action to work, a `TENDERLY_ACCESS_TOKEN`, `TENDERLY_PROJECT_SLUG` and `TENDERLY_ACCOUNT` need to be provided to the github action.
 
 ## License
 

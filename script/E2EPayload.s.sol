@@ -2,7 +2,8 @@
 pragma solidity ^0.8.13;
 
 import {Script, console} from "forge-std/Script.sol";
-import {GovV3Helpers} from "aave-helpers/src/GovV3Helpers.sol";
+import {GovV3StorageHelpers} from "aave-helpers/src/GovV3Helpers.sol";
+import {IPayloadsControllerCore} from "aave-address-book/GovernanceV3.sol";
 import {ProtocolV3TestBase, ReserveConfig, IPool} from "aave-helpers/src/ProtocolV3TestBase.sol";
 import {AaveV3Base} from "aave-address-book/AaveV3Base.sol";
 import {AaveV3Gnosis} from "aave-address-book/AaveV3Gnosis.sol";
@@ -26,7 +27,7 @@ import {ChainIds} from "solidity-utils/contracts/utils/ChainHelpers.sol";
 contract E2EPayload is Script, ProtocolV3TestBase {
     error UnknownPool();
 
-    function run(uint40 payloadId) public {
+    function run(uint40 payloadId, address payloadsController) public {
         IPool pool = _getPool();
         if (address(pool) == address(0)) revert UnknownPool();
         defaultTest(
@@ -40,15 +41,17 @@ contract E2EPayload is Script, ProtocolV3TestBase {
             ),
             pool,
             payloadId,
+            payloadsController,
             false
         );
     }
 
-    /// @dev Default test function for E2E testi.
+    /// @dev Default test function for E2E testing.
     function defaultTest(
         string memory reportName,
         IPool pool,
         uint40 payloadId,
+        address payloadsController,
         bool runE2E
     ) public returns (ReserveConfig[] memory, ReserveConfig[] memory) {
         string memory beforeString = string(
@@ -59,7 +62,8 @@ contract E2EPayload is Script, ProtocolV3TestBase {
             pool
         );
 
-        GovV3Helpers.executePayload(vm, payloadId);
+        GovV3StorageHelpers.readyPayloadId(vm, IPayloadsControllerCore(payloadsController), payloadId);
+        IPayloadsControllerCore(payloadsController).executePayload(payloadId);
 
         string memory afterString = string(
             abi.encodePacked(reportName, "_after")
@@ -69,7 +73,7 @@ contract E2EPayload is Script, ProtocolV3TestBase {
             pool
         );
 
-        _diffReports(payloadId, beforeString, afterString);
+        _diffReports(payloadId, payloadsController, beforeString, afterString);
 
         configChangePlausibilityTest(configBefore, configAfter);
 
@@ -79,6 +83,7 @@ contract E2EPayload is Script, ProtocolV3TestBase {
 
     function _diffReports(
         uint40 payloadId,
+        address payloadsController,
         string memory reportBefore,
         string memory reportAfter
     ) internal {
@@ -87,9 +92,7 @@ contract E2EPayload is Script, ProtocolV3TestBase {
                 "./reports/payloads/",
                 vm.toString(block.chainid),
                 "/",
-                vm.toString(
-                    address(GovV3Helpers.getPayloadsController(block.chainid))
-                ),
+                vm.toString(payloadsController),
                 "/",
                 vm.toString(payloadId),
                 "_forge.md"

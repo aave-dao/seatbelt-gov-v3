@@ -71,7 +71,7 @@ async function simulatePayload(
         let blockNumber = BigInt(0); // current
         if (cache.executedLog)
           blockNumber = BigInt(cache.executedLog.blockNumber) - BigInt(1);
-        simulateViaFoundry({ chain: chainId, payloadId }, blockNumber);
+        simulateViaFoundry({ chain: chainId, payloadId, payloadsController }, blockNumber);
         storeSimulationState(
           chainId,
           payloadsController,
@@ -115,7 +115,7 @@ async function simulatePayload(
           let blockNumber = BigInt(0); // current
           if (cache.executedLog)
             blockNumber = BigInt(cache.executedLog.blockNumber) - BigInt(1);
-          simulateViaFoundry({ chain: chainId, payloadId }, blockNumber);
+          simulateViaFoundry({ chain: chainId, payloadId, payloadsController }, blockNumber);
           storeSimulationState(
             chainId,
             payloadsController,

@@ -9,7 +9,7 @@ function getChainName(chainId: number) {
 }
 
 export function simulateViaFoundry(
-  payload: { chain: bigint | number; payloadId: number | bigint },
+  payload: { chain: bigint | number; payloadId: number | bigint; payloadsController: string },
   blockNumber: number | bigint,
 ) {
   const client = getClient(Number(payload.chain), {
@@ -24,7 +24,7 @@ export function simulateViaFoundry(
     `--fork-url ${client.transport.url!}`,
     blockNumber != 0n ? ` --fork-block-number ${blockNumber}` : "",
     "-vvvv",
-    `--sig "run(uint40)" -- ${payload.payloadId}`,
+    `--sig "run(uint40,address)" -- ${payload.payloadId} ${payload.payloadsController}`,
   ]
     .filter((c) => c)
     .join(" ");
