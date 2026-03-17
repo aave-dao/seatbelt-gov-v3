@@ -208,6 +208,7 @@ export async function simulateOnTenderly({
       config: {
         etherscanApiKey: process.env.ETHERSCAN_API_KEY!,
       },
+      eventCache: eventDb,
       getContractName: (sim, address) => {
         const references = getAddressBookReferences(
           address,
