@@ -13,9 +13,9 @@
   "author": "BGD Labs",
   "license": "MIT",
   "dependencies": {
-    "@aave-dao/aave-address-book": "^4.46.3",
-    "@aave-dao/aave-helpers-js": "^1.0.7",
-    "@bgd-labs/toolbox": "^0.2.20",
+    "@aave-dao/aave-address-book": "^4.47.10",
+    "@aave-dao/aave-helpers-js": "^1.0.10",
+    "@bgd-labs/toolbox": "^0.2.22",
     "commander": "^11.1.0",
     "dotenv": "^16.3.1",
     "prettier": "3.5.3",

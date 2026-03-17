@@ -5,9 +5,9 @@
     "": {
       "name": "seatbelt-gov-v3",
       "dependencies": {
-        "@aave-dao/aave-address-book": "^4.46.3",
-        "@aave-dao/aave-helpers-js": "^1.0.7",
-        "@bgd-labs/toolbox": "^0.2.20",
+        "@aave-dao/aave-address-book": "^4.47.10",
+        "@aave-dao/aave-helpers-js": "^1.0.10",
+        "@bgd-labs/toolbox": "^0.2.22",
         "commander": "^11.1.0",
         "dotenv": "^16.3.1",
         "prettier": "3.5.3",
@@ -18,13 +18,13 @@
     },
   },
   "packages": {
-    "@aave-dao/aave-address-book": ["@aave-dao/aave-address-book@4.46.3", "", { "peerDependencies": { "viem": "^2.23.5" } }, "sha512-GJz8XpF6ld7kPP8+tC468RHAApO6AAQYXkCIuU1Cwlk59aEP1Mdzrczt+5ZPgmtZaSIvY+koetbq5h7bXi9QuQ=="],
+    "@aave-dao/aave-address-book": ["@aave-dao/aave-address-book@4.47.10", "", { "peerDependencies": { "viem": "^2.23.5" } }, "sha512-1X7YdZT8hl3HjBKTz7IFhh3eWBA0F+rGFgHPCbDJ3ABjf3qA1KPUPIPuSlSAentIRGkUL1Xe9+TnTE6e8khXqw=="],
 
-    "@aave-dao/aave-helpers-js": ["@aave-dao/aave-helpers-js@1.0.7", "", { "dependencies": { "@aave-dao/aave-address-book": "^4.44.14", "@bgd-labs/toolbox": "^0.2.18", "commander": "^14.0.3", "find-object-paths": "^1.1.0", "viem": "^2.45.3", "zod": "^4.3.6" }, "bin": { "aave-helpers-js": "dist/cli.mjs" } }, "sha512-DHIkn2sjqsHdOnPYVie2q10cpSzt5BYtV6rLP5pv5UYvDZAA6S5yPXuU6fE9zNB0ao/NSFzG7azDlOr0GR16mw=="],
+    "@aave-dao/aave-helpers-js": ["@aave-dao/aave-helpers-js@1.0.10", "", { "dependencies": { "@aave-dao/aave-address-book": "^4.44.14", "@bgd-labs/toolbox": "^0.2.18", "commander": "^14.0.3", "find-object-paths": "^1.1.0", "viem": "^2.45.3", "zod": "^4.3.6" }, "bin": { "aave-helpers-js": "dist/cli.mjs" } }, "sha512-WbS9miNdfLg4rJP2MPZPgJq9m1bjcRnwXnDXA3Wcq8h94cIiP+3GUAZZRhp8Jrg2lOTPDAFSKDuPyob8mgyUXw=="],
 
     "@adraffy/ens-normalize": ["@adraffy/ens-normalize@1.11.0", "", {}, "sha512-/3DDPKHqqIqxUULp8yP4zODUY1i+2xvVWsv8A79xGWdCAG+8sb0hRh0Rk2QyOJUnnbyPUAZYcpBuRe3nS2OIUg=="],
 
-    "@bgd-labs/toolbox": ["@bgd-labs/toolbox@0.2.20", "", { "dependencies": { "bs58": "^6.0.0", "diff": "^8.0.3", "eventsource": "^4.1.0", "js-yaml": "^4.1.0" }, "peerDependencies": { "prettier": "^3.5.2", "prettier-plugin-solidity": "^1.0.0", "viem": "^2.45.0" } }, "sha512-DxkbiqC5BacuFjej+ZovA0js+xtL1rcf/sKwOVTapIKFWBMGVgm9O7HQYsgzWaGOKjVyREt7pst3U4AwpOw8Kg=="],
+    "@bgd-labs/toolbox": ["@bgd-labs/toolbox@0.2.22", "", { "dependencies": { "bs58": "^6.0.0", "diff": "^8.0.3", "eventsource": "^4.1.0", "js-yaml": "^4.1.0" }, "peerDependencies": { "prettier": "^3.5.2", "prettier-plugin-solidity": "^1.0.0", "viem": "^2.45.0" } }, "sha512-6lQUcLy+jceFqy6vVCw5i9eICdijswox2mjieF6iRMIMaOeC/Wcf3LGZn9JceeHFozoBRrXAvRjHzDRwhjLnpQ=="],
 
     "@esbuild/aix-ppc64": ["@esbuild/aix-ppc64@0.25.5", "", { "os": "aix", "cpu": "ppc64" }, "sha512-9o3TMmpmftaCMepOdA5k/yDw8SfInyzWWTjYTFCX3kPSDJMROQTb8jg+h9Cnwnmm1vOzvxN7gIfB5V2ewpjtGA=="],
 
