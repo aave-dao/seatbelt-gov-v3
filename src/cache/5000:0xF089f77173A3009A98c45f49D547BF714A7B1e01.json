@@ -220,5 +220,23 @@
     "blockTimestamp": "1773998716",
     "logIndex": 1,
     "removed": false
+  },
+  {
+    "eventName": "PayloadExecuted",
+    "args": {
+      "payloadId": 3
+    },
+    "address": "0xf089f77173a3009a98c45f49d547bf714a7b1e01",
+    "topics": [
+      "0xda6084bb0aa902a7f6da10ba185d4aa129414651c90772417eff02a52112af2a"
+    ],
+    "data": "0x0000000000000000000000000000000000000000000000000000000000000003",
+    "blockNumber": "92990746",
+    "transactionHash": "0x6482ed92177e70e40414e7b20b65dfae7cb1f46dec19d2e07b8ca8b5c2c67024",
+    "transactionIndex": 1,
+    "blockHash": "0x0ae9e534b6f3335d27841a32eda5983aa5d50fee6ebac14e0f4420e84d9cd849",
+    "blockTimestamp": "1774111804",
+    "logIndex": 3,
+    "removed": false
   }
 ]
