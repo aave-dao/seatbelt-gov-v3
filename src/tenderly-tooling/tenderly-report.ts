@@ -129,6 +129,8 @@ ${payload.actions
       eventDb: eventCache,
     }),
   );
+  // deduplicate touched addresses
+  sim.transaction.addresses = [...new Set(sim.transaction.addresses)];
   const selfDestruct = await checkForSelfdestruct(
     client,
     sim.transaction.addresses,
