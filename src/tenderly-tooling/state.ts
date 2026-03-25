@@ -178,19 +178,24 @@ export function getObjectDiff(
     after: Record<string, ValueType>;
   } = { before: {}, after: {} };
 
-  if (typeof obj1 !== "object" || typeof obj2 !== "object")
+  // If both non-objects, return raw (scalar change)
+  if (typeof obj1 !== "object" && typeof obj2 !== "object")
     return { before: obj1, after: obj2 };
-  // Get all unique keys from both objects
-  const allKeys = new Set([
-    ...Object.keys(obj1 || {}),
-    ...Object.keys(obj2 || {}),
-  ]);
+
+  // Treat non-object side as empty so field-level diff still works
+  // (e.g. undefined -> {addCap: "229", active: true, ...})
+  const a = typeof obj1 === "object" && obj1 !== null ? obj1 : {};
+  const b = typeof obj2 === "object" && obj2 !== null ? obj2 : {};
+
+  const allKeys = new Set([...Object.keys(a), ...Object.keys(b)]);
 
   for (const key of allKeys) {
-    const val1 = obj1[key];
-    const val2 = obj2[key];
+    const val1 = a[key];
+    const val2 = b[key];
 
     // Only include in diff if values are different
+    // null and undefined both represent unset/zero storage — treat as equivalent
+    if (val1 == null && val2 == null) continue;
     if (JSON.stringify(val1) !== JSON.stringify(val2)) {
       diff.before[key] = val1;
       diff.after[key] = val2;
@@ -234,7 +239,13 @@ function deepDiff({
 }) {
   let diff = "";
 
-  if (typeof before !== "object" || typeof after !== "object") {
+  const beforeIsObj = typeof before === "object" && before !== null;
+  const afterIsObj = typeof after === "object" && after !== null;
+
+  if (!beforeIsObj && !afterIsObj) {
+    // null and undefined both represent unset/zero storage — treat as equivalent
+    if (before == null && after == null) return diff;
+    // Both scalars — render as a single line
     const beforeString = JSON.stringify(before, (_, v) =>
       typeof v === "bigint" ? v.toString() : v,
     );
@@ -246,16 +257,20 @@ function deepDiff({
     diff += `- ${beforeString}\n`;
     diff += `+ ${afterString}\n\n`;
   } else {
+    // At least one side is an object — recurse into fields
+    // Treat non-object side as empty so we get field-level diffs
+    const beforeObj = beforeIsObj ? (before as Record<string, ValueType>) : {};
+    const afterObj = afterIsObj ? (after as Record<string, ValueType>) : {};
     const allKeys = new Set([
-      ...Object.keys(before || {}),
-      ...Object.keys(after || {}),
+      ...Object.keys(beforeObj),
+      ...Object.keys(afterObj),
     ]);
     for (const pathKey of allKeys) {
       diff += deepDiff({
         name,
         type,
-        before: before[pathKey],
-        after: after[pathKey],
+        before: beforeObj[pathKey],
+        after: afterObj[pathKey],
         key,
         path: path ? `${path}.${pathKey}` : pathKey,
       });

@@ -1,4 +1,4 @@
-import { Address, Client } from "viem";
+import { Address, Client, getAddress } from "viem";
 import { getSourceCode } from "@bgd-labs/toolbox";
 import { getCode } from "viem/actions";
 
@@ -31,6 +31,8 @@ export function verificationStatusToString(status: VerificationStatus) {
   }
 }
 
+const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
 /**
  * Iterates a list of addresses and returns their verification status
  * @param param0
@@ -58,10 +60,11 @@ export async function getVerificationStatus({
       });
       continue;
     }
-    if (contractDb[address]) {
+    const normalizedAddress = getAddress(address);
+    if (contractDb[normalizedAddress]) {
       results.push({
         address,
-        name: contractDb[address],
+        name: contractDb[normalizedAddress],
         status: VerificationStatus.CONTRACT,
       });
       continue;
@@ -74,20 +77,41 @@ export async function getVerificationStatus({
       });
       continue;
     }
-    try {
-      const code = await getSourceCode({
-        chainId: client.chain!.id,
-        address,
-        apiKey,
-        apiUrl,
-      });
-      results.push({
-        address,
-        name: code.ContractName,
-        status: VerificationStatus.CONTRACT,
-        new: true,
-      });
-    } catch (e) {
+    // Etherscan free tier: 3 calls/sec — pace requests and retry on rate limit
+    let resolved = false;
+    for (let attempt = 0; attempt < 3; attempt++) {
+      try {
+        if (attempt > 0) await delay(1000);
+        await delay(350); // ~2.8 calls/sec max
+        const code = await getSourceCode({
+          chainId: client.chain!.id,
+          address,
+          apiKey,
+          apiUrl,
+        });
+        results.push({
+          address,
+          name: code.ContractName,
+          status: VerificationStatus.CONTRACT,
+          new: true,
+        });
+        resolved = true;
+        break;
+      } catch (e) {
+        const msg = (e as Error).message;
+        if (!msg.includes("rate limit")) {
+          results.push({
+            address,
+            status: VerificationStatus.ERROR,
+          });
+          resolved = true;
+          break;
+        }
+        console.warn(`Rate limited on ${address}, retrying (${attempt + 1}/3)...`);
+      }
+    }
+    if (!resolved) {
+      console.error(`Verification failed for ${address} after retries`);
       results.push({
         address,
         status: VerificationStatus.ERROR,

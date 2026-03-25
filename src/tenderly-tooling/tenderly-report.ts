@@ -1,4 +1,4 @@
-import { AbiEvent, Address, Client, Hash, Hex, zeroAddress } from "viem";
+import { AbiEvent, Address, Client, getAddress, Hash, Hex, zeroAddress } from "viem";
 import { enhanceLogs, parseLogs } from "./logs";
 import {
   checkForSelfdestruct,
@@ -129,9 +129,10 @@ ${payload.actions
       eventDb: eventCache,
     }),
   );
+  const uniqueAddresses = [...new Set(sim.transaction.addresses)];
   const selfDestruct = await checkForSelfdestruct(
     client,
-    sim.transaction.addresses,
+    uniqueAddresses,
     [], // trusted addresses
   );
   const deployedOnPayload = getContractsDeployedDuringSimulation(
@@ -139,18 +140,29 @@ ${payload.actions
   );
   const verified = await getVerificationStatus({
     client: client,
-    addresses: sim.transaction.addresses,
+    addresses: uniqueAddresses,
     contractsDeployedDuringExec: deployedOnPayload,
     // In the future we might want to maintain our own db, so we do not need to rely on tenderly so much for contract name lookup.
     contractDb: sim.contracts.reduce(
       (acc, val) => {
-        acc[val.address] = val.contract_name;
+        acc[getAddress(val.address)] = val.contract_name;
         return acc;
       },
       {} as Record<Address, string>,
     ),
     apiKey: config.etherscanApiKey,
   });
+
+  // VNet simulations return empty sim.contracts — enrich with Etherscan-resolved names
+  for (const v of verified) {
+    if (v.new && v.name) {
+      sim.contracts.push({
+        address: getAddress(v.address),
+        contract_name: v.name,
+        src_map: null,
+      } as any);
+    }
+  }
 
   const stateDiff = await enhanceStateDiff(
     client,
@@ -200,7 +212,10 @@ ${payload.actions
     verified
       .sort((a, b) => a.address.localeCompare(b.address))
       .map((contract) => {
-        report += `| ${getContractName(sim, contract.address)} | ${verificationStatusToString(contract.status)} |\n`;
+        const name = contract.name
+          ? `${contract.name} at \`${getAddress(contract.address)}\``
+          : getContractName(sim, contract.address);
+        report += `| ${name} | ${verificationStatusToString(contract.status)} |\n`;
       });
     report += "\n";
   }
