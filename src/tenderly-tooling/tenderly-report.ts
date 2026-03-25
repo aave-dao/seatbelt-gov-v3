@@ -129,9 +129,11 @@ ${payload.actions
       eventDb: eventCache,
     }),
   );
+  // deduplicate touched addresses
+  const addresses = [...new Set(sim.transaction.addresses)];
   const selfDestruct = await checkForSelfdestruct(
     client,
-    sim.transaction.addresses,
+    addresses,
     [], // trusted addresses
   );
   const deployedOnPayload = getContractsDeployedDuringSimulation(
@@ -139,7 +141,7 @@ ${payload.actions
   );
   const verified = await getVerificationStatus({
     client: client,
-    addresses: sim.transaction.addresses,
+    addresses: addresses,
     contractsDeployedDuringExec: deployedOnPayload,
     // In the future we might want to maintain our own db, so we do not need to rely on tenderly so much for contract name lookup.
     contractDb: sim.contracts.reduce(
