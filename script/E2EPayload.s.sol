@@ -75,7 +75,7 @@ contract E2EPayload is Script, ProtocolV3TestBase {
 
         _diffReports(payloadId, payloadsController, beforeString, afterString);
 
-        configChangePlausibilityTest(configBefore, configAfter);
+        configChangePlausibilityTest(pool, configBefore, configAfter);
 
         if (runE2E) e2eTest(pool);
         return (configBefore, configAfter);
