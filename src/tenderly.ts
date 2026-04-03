@@ -17,7 +17,11 @@ import {
   makePayloadExecutableOnTestClient,
 } from "./tenderly-tooling/payloads-controller";
 
-export const CHAIN_NOT_SUPPORTED_ON_TENDERLY: number[] = [ChainId.zkEVM];
+// https://docs.tenderly.co/supported-networks
+export const CHAIN_NOT_SUPPORTED_ON_TENDERLY: number[] = [
+  ChainId.zkEVM,
+  ChainId.megaeth, // vnets not supported
+];
 export const NO_V_NET: number[] = [ChainId.zksync];
 
 type SimulateOnTenderlyParams = {
