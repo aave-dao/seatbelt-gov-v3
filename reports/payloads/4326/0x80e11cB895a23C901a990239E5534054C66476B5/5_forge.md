@@ -19,7 +19,7 @@
 | oracle | [0x6B00ffb3852E87c13b7f56660a7dfF64191180B3](https://megaeth.blockscout.com/address/0x6B00ffb3852E87c13b7f56660a7dfF64191180B3) |
 | oracleDecimals | 8 |
 | oracleDescription | Capped USDe/USD |
-| oracleLatestAnswer | 1.0005 $ |
+| oracleLatestAnswer | 1.00039977 $ |
 | usageAsCollateralEnabled | :x: |
 | ltv | 0 % [0] |
 | liquidationThreshold | 0 % [0] |
@@ -104,7 +104,7 @@
         "oracle": "0x6B00ffb3852E87c13b7f56660a7dfF64191180B3",
         "oracleDecimals": 8,
         "oracleDescription": "Capped USDe/USD",
-        "oracleLatestAnswer": "100050000",
+        "oracleLatestAnswer": "100039977",
         "reserveFactor": 2500,
         "supplyCap": 50000000,
         "symbol": "USDe",
