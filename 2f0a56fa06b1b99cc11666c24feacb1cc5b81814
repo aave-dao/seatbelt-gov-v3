@@ -1,0 +1,41 @@
+.github/workflows/cron.yaml
+  bdb7b8b57861fb3d 166-217,219
+src/safe.ts
+  bdb7b8b57861fb3d 1-320
+src/tenderly-tooling/safe-report.ts
+  bdb7b8b57861fb3d 1-272
+src/safe-config.ts
+  bdb7b8b57861fb3d 1-19,21-22
+  h_c84ca9b512ee6d 20
+src/safe-cron.ts
+  bdb7b8b57861fb3d 1-62
+src/safe-api.ts
+  bdb7b8b57861fb3d 1-236
+package.json
+  bdb7b8b57861fb3d 10-11
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.0",
+  "base_commit_sha": "2f0a56fa06b1b99cc11666c24feacb1cc5b81814",
+  "prompts": {
+    "bdb7b8b57861fb3d": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ca608b75-98e5-49a4-b752-831961e238b6",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "DhairyaSethi",
+      "messages": [],
+      "total_additions": 1041,
+      "total_deletions": 75,
+      "accepted_lines": 966,
+      "overriden_lines": 1
+    }
+  },
+  "humans": {
+    "h_c84ca9b512ee6d": {
+      "author": "DhairyaSethi"
+    }
+  }
+}
