@@ -153,13 +153,13 @@ export async function fetchSafeTransaction(
 }
 
 /**
- * Fetch pending (non-executed) multisig transactions for a Safe.
+ * Fetch the Safe's current nonce from the Safe Transaction Service API.
  */
-export async function fetchPendingSafeTransactions(
+export async function fetchSafeNonce(
   chainPrefix: string,
   safeAddress: Address,
-): Promise<SafeMultisigTransaction[]> {
-  const apiUrl = `${safeApiBase(chainPrefix)}/safes/${safeAddress}/multisig-transactions/?executed=false&limit=100&ordering=-nonce`;
+): Promise<number> {
+  const apiUrl = `${safeApiBase(chainPrefix)}/safes/${safeAddress}/`;
 
   const response = await fetch(apiUrl);
   if (!response.ok) {
@@ -169,7 +169,75 @@ export async function fetchPendingSafeTransactions(
   }
 
   const data = await response.json();
-  return (data.results || []) as SafeMultisigTransaction[];
+  return data.nonce as number;
+}
+
+/**
+ * Fetch pending (non-executed) multisig transactions for a Safe
+ * that are still actionable (nonce >= current Safe nonce).
+ */
+export async function fetchPendingSafeTransactions(
+  chainPrefix: string,
+  safeAddress: Address,
+): Promise<SafeMultisigTransaction[]> {
+  const [currentNonce, allPending] = await Promise.all([
+    fetchSafeNonce(chainPrefix, safeAddress),
+    fetchAllPendingSafeTransactions(chainPrefix, safeAddress),
+  ]);
+
+  const actionable = allPending.filter((tx) => tx.nonce >= currentNonce);
+  const stale = allPending.length - actionable.length;
+  if (stale > 0) {
+    console.info(
+      `Filtered out ${stale} stale pending tx(s) below current nonce ${currentNonce}`,
+    );
+  }
+
+  return actionable;
+}
+
+async function fetchAllPendingSafeTransactions(
+  chainPrefix: string,
+  safeAddress: Address,
+): Promise<SafeMultisigTransaction[]> {
+  return fetchSafeTransactionsPaginated(
+    `${safeApiBase(chainPrefix)}/safes/${safeAddress}/multisig-transactions/?executed=false&limit=100&ordering=-nonce`,
+  );
+}
+
+/**
+ * Fetch all executed multisig transactions for a Safe.
+ */
+export async function fetchExecutedSafeTransactions(
+  chainPrefix: string,
+  safeAddress: Address,
+): Promise<SafeMultisigTransaction[]> {
+  return fetchSafeTransactionsPaginated(
+    `${safeApiBase(chainPrefix)}/safes/${safeAddress}/multisig-transactions/?executed=true&limit=100&ordering=-nonce`,
+  );
+}
+
+async function fetchSafeTransactionsPaginated(
+  url: string,
+): Promise<SafeMultisigTransaction[]> {
+  const results: SafeMultisigTransaction[] = [];
+  let nextUrl: string | null = url;
+
+  while (nextUrl) {
+    const response: Response = await fetch(nextUrl);
+    if (!response.ok) {
+      throw new Error(
+        `Safe API request failed: ${response.status} ${response.statusText} (${nextUrl})`,
+      );
+    }
+
+    const data: { results?: SafeMultisigTransaction[]; next?: string } =
+      await response.json();
+    results.push(...(data.results || []));
+    nextUrl = data.next || null;
+  }
+
+  return results;
 }
 
 // --- MultiSend Decoding ---
