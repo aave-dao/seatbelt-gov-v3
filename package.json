@@ -7,6 +7,8 @@
     "simulate": "bun src/cache/refreshTree.ts && bun src/index.ts",
     "ci:tree": "bun src/cache/refreshTree.ts",
     "ci:simulate": "bun src/index.ts",
+    "safe:simulate": "bun src/safe.ts",
+    "safe:cron": "bun src/safe-cron.ts",
     "test": "vitest src"
   },
   "type": "module",

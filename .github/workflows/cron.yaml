@@ -163,8 +163,60 @@ jobs:
           # Optional. Defaults to repository settings.
           retention-days: 1
 
+  safes:
+    needs: [tree]
+    name: Check pending Safe transactions
+    runs-on: ubuntu-latest
+    env:
+      ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
+      TENDERLY_ACCESS_TOKEN: ${{ secrets.TENDERLY_ACCESS_TOKEN }}
+      TENDERLY_PROJECT_SLUG: ${{ secrets.TENDERLY_PROJECT_SLUG }}
+      TENDERLY_ACCOUNT: ${{ secrets.TENDERLY_ACCOUNT }}
+    steps:
+      - uses: actions/create-github-app-token@v2
+        id: app-token
+        with:
+          app-id: ${{ secrets.UPDATE_BOT_APP_ID }}
+          private-key: ${{ secrets.UPDATE_BOT_TOKEN }}
+
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          token: ${{ steps.app-token.outputs.token }}
+
+      - uses: bgd-labs/github-workflows/.github/actions/setup-node@main
+
+      - uses: bgd-labs/action-rpc-env@main
+        with:
+          ALCHEMY_API_KEY: ${{ secrets.ALCHEMY_API_KEY }}
+          QUICKNODE_TOKEN: ${{ secrets.QUICKNODE_TOKEN }}
+          QUICKNODE_ENDPOINT_NAME: ${{ secrets.QUICKNODE_ENDPOINT_NAME }}
+
+      - name: Simulate pending Safe transactions
+        run: bun run safe:cron
+
+      - name: check diff
+        id: diff
+        run: |
+          if [[ -z $(git status reports -s) ]]
+          then
+            echo "tree is clean"
+          else
+            git add reports
+            git diff --cached > safes.patch
+            echo "diff=true" >> $GITHUB_OUTPUT
+          fi
+
+      - uses: actions/upload-artifact@v4
+        if: ${{ steps.diff.outputs.diff == 'true' }}
+        with:
+          name: safes_patch
+          path: safes.patch
+          retention-days: 1
+
   report:
-    needs: ["payloads"]
+    needs: ["payloads", "safes"]
     name: Commit actual changes
     runs-on: ubuntu-latest
     steps:
