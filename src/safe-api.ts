@@ -126,6 +126,25 @@ export function parseSafeUrl(url: string): ParsedSafeUrl {
   };
 }
 
+// --- Fetch with retry ---
+
+async function fetchWithRetry(
+  url: string,
+  maxRetries = 3,
+): Promise<Response> {
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    const response = await fetch(url);
+    if (response.status === 429 && attempt < maxRetries) {
+      const delay = Math.pow(2, attempt + 1) * 1000; // 2s, 4s, 8s
+      console.warn(`Rate limited (429), retrying in ${delay / 1000}s...`);
+      await new Promise((r) => setTimeout(r, delay));
+      continue;
+    }
+    return response;
+  }
+  throw new Error("Unreachable");
+}
+
 // --- Safe Transaction Service API ---
 
 function safeApiBase(chainPrefix: string) {
@@ -141,7 +160,7 @@ export async function fetchSafeTransaction(
 ): Promise<SafeMultisigTransaction> {
   const apiUrl = `${safeApiBase(chainPrefix)}/multisig-transactions/${safeTxHash}/`;
 
-  const response = await fetch(apiUrl);
+  const response = await fetchWithRetry(apiUrl);
   if (!response.ok) {
     throw new Error(
       `Safe API request failed: ${response.status} ${response.statusText} (${apiUrl})`,
@@ -161,7 +180,7 @@ export async function fetchSafeNonce(
 ): Promise<number> {
   const apiUrl = `${safeApiBase(chainPrefix)}/safes/${safeAddress}/`;
 
-  const response = await fetch(apiUrl);
+  const response = await fetchWithRetry(apiUrl);
   if (!response.ok) {
     throw new Error(
       `Safe API request failed: ${response.status} ${response.statusText} (${apiUrl})`,
@@ -224,7 +243,7 @@ async function fetchSafeTransactionsPaginated(
   let nextUrl: string | null = url;
 
   while (nextUrl) {
-    const response: Response = await fetch(nextUrl);
+    const response: Response = await fetchWithRetry(nextUrl);
     if (!response.ok) {
       throw new Error(
         `Safe API request failed: ${response.status} ${response.statusText} (${nextUrl})`,

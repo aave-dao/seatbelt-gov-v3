@@ -12,6 +12,12 @@ import {
   getSafeReportFileName,
 } from "./safe";
 
+const DELAY_BETWEEN_SIMS_MS = 1500;
+
+function sleep(ms: number) {
+  return new Promise((r) => setTimeout(r, ms));
+}
+
 async function simulateIfMissing(
   chainId: number,
   safeAddress: string,
@@ -35,9 +41,11 @@ async function simulateIfMissing(
     const report = await simulateSafeTransaction(chainId, tx);
     writeFileSync(reportFile, report);
     console.info(`  Nonce ${tx.nonce}: report written`);
+    await sleep(DELAY_BETWEEN_SIMS_MS);
     return true;
   } catch (e) {
     console.error(`  Nonce ${tx.nonce}: simulation failed: ${e}`);
+    await sleep(DELAY_BETWEEN_SIMS_MS);
     return false;
   }
 }

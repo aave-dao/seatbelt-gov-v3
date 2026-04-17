@@ -62,11 +62,11 @@ export async function renderSafeReport({
   report += `- Target: [${safeTx.to}](${toAddressLink(safeTx.to, client)})\n`;
   report += `- Value: ${safeTx.value}\n`;
 
+  if (safeTx.data) {
+    report += `- Data: \`${safeTx.data}\`\n`;
+  }
   if (safeTx.dataDecoded) {
-    const params = safeTx.dataDecoded.parameters
-      .map((p: any) => p.type)
-      .join(", ");
-    report += `- Decoded: \`${safeTx.dataDecoded.method}(${params})\`\n`;
+    report += `- Decoded: \`${formatDecoded(safeTx.dataDecoded)}\`\n`;
   }
 
   report += `- Submitted: ${safeTx.submissionDate}\n`;
@@ -81,14 +81,22 @@ export async function renderSafeReport({
 
   // --- MultiSend actions summary ---
   if (isMultiSend) {
+    // Try to get decoded sub-tx info from the Safe API's dataDecoded
+    const decodedSubTxs = getDecodedSubTransactions(safeTx);
+
     report += `### Actions (${subTransactions.length} sub-transactions)\n\n`;
     subTransactions.forEach((subTx, i) => {
       const opStr = subTx.operation === 0 ? "Call" : "DelegateCall";
+      const decoded = decodedSubTxs?.[i];
       report += `${i + 1}. ${opStr} to [${subTx.to}](${toAddressLink(subTx.to, client)})`;
       if (subTx.value > 0n) report += ` (value: ${subTx.value})`;
-      if (subTx.data !== "0x")
-        report += ` — data: \`${subTx.data.slice(0, 10)}...\``;
+      if (decoded?.dataDecoded) {
+        report += ` — \`${formatDecoded(decoded.dataDecoded)}\``;
+      }
       report += "\n";
+      if (subTx.data !== "0x") {
+        report += `   - data: \`${subTx.data}\`\n`;
+      }
     });
     report += "\n";
   }
@@ -100,9 +108,17 @@ export async function renderSafeReport({
     if (isMultiSend && simResults.length > 1) {
       const subTx = subTransactions[simIdx];
       report += `### Sub-transaction ${simIdx + 1} of ${simResults.length}\n\n`;
+      const decoded = getDecodedSubTransactions(safeTx)?.[simIdx];
       report += `- To: [${subTx.to}](${toAddressLink(subTx.to, client)})\n`;
       report += `- Value: ${subTx.value.toString()}\n`;
-      report += `- Operation: ${subTx.operation === 0 ? "Call" : "DelegateCall"}\n\n`;
+      report += `- Operation: ${subTx.operation === 0 ? "Call" : "DelegateCall"}\n`;
+      if (subTx.data !== "0x") {
+        report += `- Data: \`${subTx.data}\`\n`;
+      }
+      if (decoded?.dataDecoded) {
+        report += `- Decoded: \`${formatDecoded(decoded.dataDecoded)}\`\n`;
+      }
+      report += "\n";
     }
 
     if (sim.simulation.status === false) {
@@ -251,6 +267,29 @@ export async function renderSafeReport({
   }
 
   return { report, eventCache };
+}
+
+function formatDecoded(dataDecoded: { method: string; parameters: any[] }): string {
+  const params = dataDecoded.parameters
+    .map((p: any) => {
+      const val =
+        typeof p.value === "string" && p.value.length > 128
+          ? `${p.value.slice(0, 128)}...`
+          : JSON.stringify(p.value);
+      return `${p.name}: ${val}`;
+    })
+    .join(", ");
+  return `${dataDecoded.method}(${params})`;
+}
+
+function getDecodedSubTransactions(
+  safeTx: SafeMultisigTransaction,
+): { dataDecoded?: { method: string; parameters: any[] } }[] | undefined {
+  if (!safeTx.dataDecoded) return undefined;
+  const txsParam = safeTx.dataDecoded.parameters?.find(
+    (p: any) => p.name === "transactions",
+  );
+  return txsParam?.valueDecoded as any;
 }
 
 function getContractsDeployedDuringSimulation(
