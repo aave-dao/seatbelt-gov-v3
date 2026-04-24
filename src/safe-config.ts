@@ -91,11 +91,11 @@ export const TRACKED_SAFES: TrackedSafe[] = [
     label: "RiskCouncil Oeth",
   },
 
-  {
-    chainPrefix: "plasma",
-    address: "0xE71C189C7D8862EfDa0D9E031157199D2F3B4893",
-    label: "RiskCouncil plamsa",
-  },
+  // {
+  //   chainPrefix: "plasma",
+  //   address: "0xE71C189C7D8862EfDa0D9E031157199D2F3B4893",
+  //   label: "RiskCouncil plamsa",
+  // },
 
   {
     chainPrefix: "sonic",
