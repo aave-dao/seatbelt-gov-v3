@@ -1,0 +1,14 @@
+src/safe-config.ts
+  h_c84ca9b512ee6d 94-98
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.4",
+  "base_commit_sha": "2de8f36e4252a216efcdbd6ecbcdc28f6d62d806",
+  "prompts": {},
+  "humans": {
+    "h_c84ca9b512ee6d": {
+      "author": "DhairyaSethi"
+    }
+  }
+}
