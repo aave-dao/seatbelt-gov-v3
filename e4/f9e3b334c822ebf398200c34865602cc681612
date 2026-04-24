@@ -1,0 +1,28 @@
+src/safe-config.ts
+  h_c84ca9b512ee6d 24-26
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.4",
+  "base_commit_sha": "e4f9e3b334c822ebf398200c34865602cc681612",
+  "prompts": {
+    "bdb7b8b57861fb3d": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ca608b75-98e5-49a4-b752-831961e238b6",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "DhairyaSethi",
+      "messages": [],
+      "total_additions": 141,
+      "total_deletions": 31,
+      "accepted_lines": 5901,
+      "overriden_lines": 5
+    }
+  },
+  "humans": {
+    "h_c84ca9b512ee6d": {
+      "author": "DhairyaSethi"
+    }
+  }
+}
