@@ -1,16 +1,13 @@
 import "dotenv/config";
 import { existsSync, writeFileSync } from "fs";
-import { TRACKED_SAFES } from "./safe-config";
+import { TRACKED_SAFES, BACKFILL } from "./safe-config";
 import {
   chainPrefixToChainId,
   fetchPendingSafeTransactions,
   fetchExecutedSafeTransactions,
   type SafeMultisigTransaction,
 } from "./safe-api";
-import {
-  simulateSafeTransaction,
-  getSafeReportFileName,
-} from "./safe";
+import { simulateSafeTransaction, getSafeReportFileName } from "./safe";
 
 const DELAY_BETWEEN_SIMS_MS = 1500;
 
@@ -65,7 +62,9 @@ async function main() {
       );
 
       if (pendingTxs.length > 0) {
-        console.info(`\nPending: ${pendingTxs.length} actionable transaction(s)`);
+        console.info(
+          `\nPending: ${pendingTxs.length} actionable transaction(s)`,
+        );
         for (const tx of pendingTxs) {
           await simulateIfMissing(chainId, safe.address, tx);
         }
@@ -77,6 +76,10 @@ async function main() {
     }
 
     // 2. Executed transactions (backfill missing reports)
+    if (!BACKFILL) {
+      console.log("\nBackfill disabled, skipping executed transactions");
+      continue;
+    }
     try {
       const executedTxs = await fetchExecutedSafeTransactions(
         safe.chainPrefix,

@@ -23,6 +23,7 @@ import {
 } from "./safe-api";
 import { renderSafeReport } from "./tenderly-tooling/safe-report";
 import { CHAIN_NOT_SUPPORTED_ON_TENDERLY } from "./tenderly";
+import { simulateSafeViaFoundry } from "./foundry";
 
 export function getSafeReportFileName(
   chainId: number,
@@ -76,37 +77,36 @@ export async function simulateSafeTransaction(
   }
 
   if (CHAIN_NOT_SUPPORTED_ON_TENDERLY.includes(chainId)) {
-    // Direct simulation fallback — no vnet support
-    console.info("Chain not supported on Tenderly vnets, using direct sim");
-    if (isMultiSend && subTransactions) {
-      // Simulate each sub-tx individually (loses sequential state)
-      console.warn(
-        "MultiSend on non-vnet chain: sub-txs simulated independently (no shared state)",
-      );
-      for (const subTx of subTransactions) {
-        const result = await tenderly_sim(tenderlyConfig, {
-          network_id: chainId.toString(),
-          from: safeTx.safe,
-          to: subTx.to,
-          input: subTx.data || "0x",
-          value: subTx.value.toString(),
-          block_number: blockNumber,
-          save: true,
-        });
-        simResults.push(result);
+    // Foundry simulation for chains Tenderly doesn't support (e.g. MegaETH)
+    console.info("Chain not supported on Tenderly, using Foundry simulation");
+    const forgeBlock = blockNumber === -2 ? 0n : BigInt(blockNumber);
+
+    const txsToSimulate = isMultiSend && subTransactions
+      ? subTransactions.map((sub) => ({
+          to: sub.to,
+          value: sub.value.toString(),
+          data: sub.data || "0x",
+        }))
+      : [{ to: safeTx.to, value: safeTx.value, data: safeTx.data || "0x" }];
+
+    const traceOutputs: string[] = [];
+    for (let i = 0; i < txsToSimulate.length; i++) {
+      const tx = txsToSimulate[i];
+      if (txsToSimulate.length > 1) {
+        console.info(`Simulating sub-tx ${i + 1}/${txsToSimulate.length}: ${tx.to}`);
       }
-    } else {
-      const result = await tenderly_sim(tenderlyConfig, {
-        network_id: chainId.toString(),
-        from: safeTx.safe,
-        to: safeTx.to,
-        input: safeTx.data || "0x",
-        value: safeTx.value,
-        block_number: blockNumber,
-        save: true,
-      });
-      simResults.push(result);
+      try {
+        const output = simulateSafeViaFoundry(
+          { chain: chainId, safe: safeTx.safe, to: tx.to, value: tx.value, data: tx.data },
+          forgeBlock,
+        );
+        traceOutputs.push(output);
+      } catch (e: any) {
+        traceOutputs.push(e.stdout?.toString() || e.message || "Simulation failed");
+      }
     }
+
+    return renderFoundrySafeReport(safeTx, txsToSimulate, subTransactions, traceOutputs);
   } else {
     // Vnet-based simulation
     try {
@@ -238,6 +238,62 @@ export async function simulateSafeTransaction(
       etherscanApiKey: process.env.ETHERSCAN_API_KEY!,
     },
   });
+
+  return report;
+}
+
+function renderFoundrySafeReport(
+  safeTx: SafeMultisigTransaction,
+  _txsSimulated: { to: string; value: string; data: string }[],
+  subTransactions: SafeSubTransaction[] | undefined,
+  traceOutputs: string[],
+): string {
+  let report = `## Safe Transaction (Foundry)\n\n`;
+  report += `- Safe: \`${safeTx.safe}\`\n`;
+  report += `- SafeTxHash: \`${safeTx.safeTxHash}\`\n`;
+  report += `- Nonce: ${safeTx.nonce}\n`;
+  report += `- Proposer: ${safeTx.proposer}\n`;
+  report += `- Confirmations: ${safeTx.confirmations.length}/${safeTx.confirmationsRequired}\n`;
+  report += `- Operation: ${safeTx.operation === 0 ? "Call" : "DelegateCall"}\n`;
+  report += `- Target: \`${safeTx.to}\`\n`;
+  report += `- Value: ${safeTx.value}\n`;
+  if (safeTx.data) {
+    report += `- Data: \`${safeTx.data}\`\n`;
+  }
+  if (safeTx.dataDecoded) {
+    report += `- Decoded: \`${safeTx.dataDecoded.method}\`\n`;
+  }
+  report += `- Submitted: ${safeTx.submissionDate}\n`;
+  if (safeTx.isExecuted) {
+    report += `- Executed: ${safeTx.executionDate} (tx: \`${safeTx.transactionHash}\`)\n`;
+  } else {
+    report += `- Status: Pending\n`;
+  }
+  report += "\n";
+
+  for (let i = 0; i < traceOutputs.length; i++) {
+    if (traceOutputs.length > 1) {
+      const sub = subTransactions?.[i];
+      report += `### Sub-transaction ${i + 1} of ${traceOutputs.length}\n\n`;
+      if (sub) {
+        report += `- To: \`${sub.to}\`\n`;
+        report += `- Value: ${sub.value}\n`;
+        report += `- Data: \`${sub.data}\`\n\n`;
+      }
+    }
+
+    const trace = traceOutputs[i];
+    const succeeded = trace.includes("SAFE_SIM_SUCCESS");
+    const reverted = trace.includes("SAFE_SIM_REVERTED");
+
+    if (reverted) {
+      report += `:sos: Simulation reverted\n\n`;
+    } else if (succeeded) {
+      report += `Simulation succeeded\n\n`;
+    }
+
+    report += `<details>\n<summary>Forge trace</summary>\n\n\`\`\`\n${trace}\n\`\`\`\n</details>\n\n`;
+  }
 
   return report;
 }

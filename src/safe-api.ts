@@ -69,6 +69,7 @@ const CHAIN_PREFIX_MAP: Record<string, number> = {
   sep: 11155111,
   celo: 42220,
   sonic: 146,
+  megaeth: 4326,
 };
 
 export function chainPrefixToChainId(prefix: string): number {
@@ -116,8 +117,7 @@ export function parseSafeUrl(url: string): ParsedSafeUrl {
   const idMatch = idParam.match(
     /^multisig_0x[a-fA-F0-9]{40}_(0x[a-fA-F0-9]{64})$/,
   );
-  if (!idMatch)
-    throw new Error(`Invalid id parameter format: "${idParam}"`);
+  if (!idMatch) throw new Error(`Invalid id parameter format: "${idParam}"`);
 
   return {
     chainPrefix,
@@ -128,10 +128,7 @@ export function parseSafeUrl(url: string): ParsedSafeUrl {
 
 // --- Fetch with retry ---
 
-async function fetchWithRetry(
-  url: string,
-  maxRetries = 3,
-): Promise<Response> {
+async function fetchWithRetry(url: string, maxRetries = 3): Promise<Response> {
   for (let attempt = 0; attempt <= maxRetries; attempt++) {
     const response = await fetch(url);
     if (response.status === 429 && attempt < maxRetries) {
@@ -296,11 +293,15 @@ export function decodeMultiSend(data: Hex): SafeSubTransaction[] {
     offset += 1;
 
     // to: 20 bytes
-    const to = getAddress(`0x${buf.subarray(offset, offset + 20).toString("hex")}`);
+    const to = getAddress(
+      `0x${buf.subarray(offset, offset + 20).toString("hex")}`,
+    );
     offset += 20;
 
     // value: 32 bytes (uint256)
-    const value = BigInt(`0x${buf.subarray(offset, offset + 32).toString("hex")}`);
+    const value = BigInt(
+      `0x${buf.subarray(offset, offset + 32).toString("hex")}`,
+    );
     offset += 32;
 
     // dataLength: 32 bytes (uint256)
