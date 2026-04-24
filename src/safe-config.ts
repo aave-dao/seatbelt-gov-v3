@@ -21,6 +21,11 @@ export const TRACKED_SAFES: TrackedSafe[] = [
   },
   {
     chainPrefix: "eth",
+    address: "0xE6ec1f0Ae6Cd023bd0a9B4d0253BDC755103253c",
+    label: "Horizon Operational",
+  },
+  {
+    chainPrefix: "eth",
     address: "0x187AAE17d4931310B3fc75743e7F16Bdc9eD77e9",
     label: "V4 Security Council Multisig",
   },
