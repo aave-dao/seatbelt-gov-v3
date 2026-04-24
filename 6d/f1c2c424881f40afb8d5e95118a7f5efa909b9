@@ -1,0 +1,26 @@
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.4",
+  "base_commit_sha": "6df1c2c424881f40afb8d5e95118a7f5efa909b9",
+  "prompts": {
+    "bdb7b8b57861fb3d": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ca608b75-98e5-49a4-b752-831961e238b6",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "DhairyaSethi",
+      "messages": [],
+      "total_additions": 1088,
+      "total_deletions": 0,
+      "accepted_lines": 7597,
+      "overriden_lines": 62
+    }
+  },
+  "humans": {
+    "h_c84ca9b512ee6d": {
+      "author": "DhairyaSethi"
+    }
+  }
+}
