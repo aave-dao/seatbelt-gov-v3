@@ -1,7 +1,14 @@
 import "dotenv/config";
 import { existsSync, writeFileSync, mkdirSync } from "fs";
 import path from "path";
-import { Address, Hex, getAddress } from "viem";
+import {
+  Address,
+  Hex,
+  encodeFunctionData,
+  getAddress,
+  parseEther,
+  toHex,
+} from "viem";
 import {
   getClient,
   tenderly_createVnet,
@@ -24,6 +31,50 @@ import {
 import { renderSafeReport } from "./tenderly-tooling/safe-report";
 import { CHAIN_NOT_SUPPORTED_ON_TENDERLY } from "./tenderly";
 import { simulateSafeViaFoundry } from "./foundry";
+
+// Minimal Safe v1.3+ ABI: just what we need to simulate execTransaction atomically
+const SAFE_ABI = [
+  {
+    type: "function",
+    name: "getOwners",
+    inputs: [],
+    outputs: [{ type: "address[]" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "execTransaction",
+    inputs: [
+      { name: "to", type: "address" },
+      { name: "value", type: "uint256" },
+      { name: "data", type: "bytes" },
+      { name: "operation", type: "uint8" },
+      { name: "safeTxGas", type: "uint256" },
+      { name: "baseGas", type: "uint256" },
+      { name: "gasPrice", type: "uint256" },
+      { name: "gasToken", type: "address" },
+      { name: "refundReceiver", type: "address" },
+      { name: "signatures", type: "bytes" },
+    ],
+    outputs: [{ type: "bool" }],
+    stateMutability: "payable",
+  },
+] as const;
+
+// Slot 4 in Safe v1.3+ (OwnerManager: owners mapping @2, ownerCount @3, threshold @4)
+const SAFE_THRESHOLD_SLOT = toHex(4, { size: 32 });
+
+/**
+ * Build an approved-hash signature (v=1) for Safe.execTransaction.
+ * Format: r (32 bytes, owner address right-padded) || s (32 bytes, zero) || v (1 byte, 0x01).
+ * When `from == owner` on the vnet, Safe's checkNSignatures accepts this without needing a real signature.
+ */
+function buildApprovedHashSignature(owner: Address): Hex {
+  return ("0x" +
+    owner.slice(2).toLowerCase().padStart(64, "0") +
+    "0".repeat(64) +
+    "01") as Hex;
+}
 
 export function getSafeReportFileName(
   chainId: number,
@@ -130,66 +181,71 @@ export async function simulateSafeTransaction(
         });
       }
 
-      if (isMultiSend && subTransactions) {
-        // Simulate each sub-tx sequentially on the vnet
-        for (let i = 0; i < subTransactions.length; i++) {
-          const subTx = subTransactions[i];
-          console.info(
-            `Simulating sub-tx ${i + 1}/${subTransactions.length}: ${subTx.to}`,
-          );
+      if (safeTx.operation === 1) {
+        // DelegateCall: atomic simulation via Safe.execTransaction with storage overrides.
+        // This reproduces the real onchain path (Safe delegatecalls the target; target's code
+        // runs in Safe's storage context; msg.sender at sub-targets = Safe).
+        const owners = (await client.readContract({
+          address: safeTx.safe,
+          abi: SAFE_ABI,
+          functionName: "getOwners",
+        })) as readonly Address[];
 
-          if (subTx.operation === 1) {
-            console.warn(
-              `Sub-tx ${i + 1} is a DelegateCall — simulating as Call (may be inaccurate)`,
-            );
-          }
-
-          // Ensure balance for sub-tx value
-          if (subTx.value > 0n) {
-            await vnet.testClient.setBalance({
-              address: safeTx.safe,
-              value: subTx.value * 2n,
-            });
-          }
-
-          const simPayload = {
-            network_id: chainId.toString(),
-            from: safeTx.safe,
-            to: subTx.to,
-            input: subTx.data || "0x",
-            value: subTx.value.toString(),
-            block_number: -2, // latest on vnet
-            transaction_index: 0,
-            gas_limit: chainId !== ChainId.mantle ? 16_000_000 : 0,
-            gas_price: "0",
-            access_list: [],
-            generate_access_list: true,
-            save: true,
-            source: "dashboard",
-          };
-
-          const simResult = await vnet.simulate(simPayload);
-          simResults.push(simResult);
-
-          // Execute on vnet to persist state for the next sub-tx
-          if (i < subTransactions.length - 1) {
-            try {
-              await vnet.walletClient.sendTransaction({
-                chain: { id: chainId } as any,
-                account: safeTx.safe,
-                to: subTx.to,
-                data: subTx.data || "0x",
-                value: subTx.value,
-              });
-            } catch (e) {
-              console.warn(
-                `Failed to execute sub-tx ${i + 1} on vnet for state persistence: ${e}`,
-              );
-            }
-          }
+        if (owners.length === 0) {
+          throw new Error(`Safe ${safeTx.safe} has no owners`);
         }
+        const owner = owners[0];
+
+        // Override threshold to 1 so a single signature suffices.
+        await vnet.testClient.setStorageAt({
+          address: safeTx.safe,
+          index: SAFE_THRESHOLD_SLOT,
+          value: toHex(1, { size: 32 }),
+        });
+
+        // Fund the owner for gas.
+        await vnet.testClient.setBalance({
+          address: owner,
+          value: parseEther("100"),
+        });
+
+        const signatures = buildApprovedHashSignature(owner);
+
+        const input = encodeFunctionData({
+          abi: SAFE_ABI,
+          functionName: "execTransaction",
+          args: [
+            safeTx.to,
+            BigInt(safeTx.value),
+            (safeTx.data || "0x") as Hex,
+            1, // operation = DelegateCall
+            BigInt(safeTx.safeTxGas),
+            BigInt(safeTx.baseGas),
+            BigInt(safeTx.gasPrice),
+            safeTx.gasToken,
+            safeTx.refundReceiver,
+            signatures,
+          ],
+        });
+
+        const simResult = await vnet.simulate({
+          network_id: chainId.toString(),
+          from: owner,
+          to: safeTx.safe,
+          input,
+          value: "0",
+          block_number: -2,
+          transaction_index: 0,
+          gas_limit: chainId !== ChainId.mantle ? 16_000_000 : 0,
+          gas_price: "0",
+          access_list: [],
+          generate_access_list: true,
+          save: true,
+          source: "dashboard",
+        });
+        simResults.push(simResult);
       } else {
-        // Single transaction simulation
+        // Call (operation=0): direct sim from the Safe.
         const simPayload = {
           network_id: chainId.toString(),
           from: safeTx.safe,

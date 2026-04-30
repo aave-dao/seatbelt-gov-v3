@@ -65,11 +65,12 @@ const CHAIN_PREFIX_MAP: Record<string, number> = {
   scr: 534352,
   linea: 59144,
   zksync: 324,
-  mnt: 5000,
+  mantle: 5000,
   sep: 11155111,
   celo: 42220,
   sonic: 146,
   megaeth: 4326,
+  plasma: 9745,
 };
 
 export function chainPrefixToChainId(prefix: string): number {

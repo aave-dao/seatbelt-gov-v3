@@ -1,6 +1,12 @@
 import "dotenv/config";
 import { existsSync, writeFileSync } from "fs";
-import { TRACKED_SAFES, BACKFILL } from "./safe-config";
+import {
+  TRACKED_SAFES,
+  BACKFILL,
+  FORCE_RERUN_PENDING,
+  PARALLEL_SAFES,
+  type TrackedSafe,
+} from "./safe-config";
 import {
   chainPrefixToChainId,
   fetchPendingSafeTransactions,
@@ -16,9 +22,11 @@ function sleep(ms: number) {
 }
 
 async function simulateIfMissing(
+  tag: string,
   chainId: number,
   safeAddress: string,
   tx: SafeMultisigTransaction,
+  force = false,
 ) {
   const reportFile = getSafeReportFileName(
     chainId,
@@ -26,89 +34,113 @@ async function simulateIfMissing(
     tx.nonce,
   );
 
-  if (existsSync(reportFile)) {
-    return false; // already exists
+  if (!force && existsSync(reportFile)) {
+    return false;
   }
 
   console.info(
-    `  Nonce ${tx.nonce}: simulating (safeTxHash: ${tx.safeTxHash})`,
+    `${tag} Nonce ${tx.nonce}: simulating${force ? " (forced rerun)" : ""} (safeTxHash: ${tx.safeTxHash})`,
   );
 
   try {
     const report = await simulateSafeTransaction(chainId, tx);
     writeFileSync(reportFile, report);
-    console.info(`  Nonce ${tx.nonce}: report written`);
+    console.info(`${tag} Nonce ${tx.nonce}: report written`);
     await sleep(DELAY_BETWEEN_SIMS_MS);
     return true;
   } catch (e) {
-    console.error(`  Nonce ${tx.nonce}: simulation failed: ${e}`);
+    console.error(`${tag} Nonce ${tx.nonce}: simulation failed: ${e}`);
     await sleep(DELAY_BETWEEN_SIMS_MS);
     return false;
   }
 }
 
-async function main() {
-  for (const safe of TRACKED_SAFES) {
-    const chainId = chainPrefixToChainId(safe.chainPrefix);
-    console.info(
-      `\n=== ${safe.label} (${safe.chainPrefix}:${safe.address}) ===`,
+async function processSafe(safe: TrackedSafe) {
+  const chainId = chainPrefixToChainId(safe.chainPrefix);
+  const tag = `[${safe.label}]`;
+  console.info(
+    `${tag} === starting (${safe.chainPrefix}:${safe.address}) ===`,
+  );
+
+  // 1. Pending transactions (actionable, nonce >= current nonce)
+  try {
+    const pendingTxs = await fetchPendingSafeTransactions(
+      safe.chainPrefix,
+      safe.address,
     );
 
-    // 1. Pending transactions (actionable, nonce >= current nonce)
-    try {
-      const pendingTxs = await fetchPendingSafeTransactions(
-        safe.chainPrefix,
-        safe.address,
+    if (pendingTxs.length > 0) {
+      console.info(
+        `${tag} Pending: ${pendingTxs.length} actionable transaction(s)`,
       );
-
-      if (pendingTxs.length > 0) {
-        console.info(
-          `\nPending: ${pendingTxs.length} actionable transaction(s)`,
-        );
-        for (const tx of pendingTxs) {
-          await simulateIfMissing(chainId, safe.address, tx);
-        }
-      } else {
-        console.info("No pending actionable transactions");
-      }
-    } catch (e) {
-      console.error(`Failed to fetch pending transactions: ${e}`);
-    }
-
-    // 2. Executed transactions (backfill missing reports)
-    if (!BACKFILL) {
-      console.log("\nBackfill disabled, skipping executed transactions");
-      continue;
-    }
-    try {
-      const executedTxs = await fetchExecutedSafeTransactions(
-        safe.chainPrefix,
-        safe.address,
-      );
-
-      const missing = executedTxs.filter(
-        (tx) =>
-          !existsSync(
-            getSafeReportFileName(chainId, safe.address as any, tx.nonce),
-          ),
-      );
-
-      if (missing.length > 0) {
-        console.info(
-          `\nExecuted: ${missing.length} of ${executedTxs.length} missing reports, backfilling...`,
-        );
-        for (const tx of missing) {
-          await simulateIfMissing(chainId, safe.address, tx);
-        }
-      } else {
-        console.info(
-          `Executed: all ${executedTxs.length} transactions have reports`,
+      for (const tx of pendingTxs) {
+        await simulateIfMissing(
+          tag,
+          chainId,
+          safe.address,
+          tx,
+          FORCE_RERUN_PENDING,
         );
       }
-    } catch (e) {
-      console.error(`Failed to fetch executed transactions: ${e}`);
+    } else {
+      console.info(`${tag} No pending actionable transactions`);
     }
+  } catch (e) {
+    console.error(`${tag} Failed to fetch pending transactions: ${e}`);
   }
+
+  // 2. Executed transactions (backfill missing reports)
+  if (!BACKFILL) {
+    console.info(`${tag} Backfill disabled, skipping executed transactions`);
+    return;
+  }
+  try {
+    const executedTxs = await fetchExecutedSafeTransactions(
+      safe.chainPrefix,
+      safe.address,
+    );
+
+    const missing = executedTxs.filter(
+      (tx) =>
+        !existsSync(
+          getSafeReportFileName(chainId, safe.address as any, tx.nonce),
+        ),
+    );
+
+    if (missing.length > 0) {
+      console.info(
+        `${tag} Executed: ${missing.length} of ${executedTxs.length} missing reports, backfilling...`,
+      );
+      for (const tx of missing) {
+        await simulateIfMissing(tag, chainId, safe.address, tx);
+      }
+    } else {
+      console.info(
+        `${tag} Executed: all ${executedTxs.length} transactions have reports`,
+      );
+    }
+  } catch (e) {
+    console.error(`${tag} Failed to fetch executed transactions: ${e}`);
+  }
+}
+
+async function main() {
+  const concurrency = Math.max(1, PARALLEL_SAFES);
+  console.info(
+    `Processing ${TRACKED_SAFES.length} safe(s) with concurrency ${concurrency}`,
+  );
+
+  // Worker-pool: each worker pulls the next safe from a shared queue until empty.
+  // Keeps the pipeline full (no waiting for the slowest safe in a batch to finish).
+  let next = 0;
+  const workers = Array.from({ length: concurrency }, async () => {
+    while (true) {
+      const idx = next++;
+      if (idx >= TRACKED_SAFES.length) return;
+      await processSafe(TRACKED_SAFES[idx]);
+    }
+  });
+  await Promise.all(workers);
 }
 
 main().catch((e) => {

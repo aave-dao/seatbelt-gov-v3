@@ -10,6 +10,8 @@ export type TrackedSafe = {
 };
 
 export const BACKFILL = false; // set to true to backfill all transactions (pending and executed), false to only simulate pending transactions
+export const FORCE_RERUN_PENDING = true; // set to true to re-simulate pending transactions even if a report already exists (useful when proposals change)
+export const PARALLEL_SAFES = 3; // number of safes to process in parallel (each safe still processes its own txs sequentially)
 
 /**
  * List of Safes to track in the cron job.
@@ -80,7 +82,7 @@ export const TRACKED_SAFES: TrackedSafe[] = [
   },
 
   {
-    chainPrefix: "mnt",
+    chainPrefix: "mantle",
     address: "0xfF0ACe5060bd25f6900eb4bD91a868213C5346B5",
     label: "RiskCouncil mantle",
   },
@@ -91,23 +93,17 @@ export const TRACKED_SAFES: TrackedSafe[] = [
     label: "RiskCouncil Oeth",
   },
 
-  // {
-  //   chainPrefix: "plasma",
-  //   address: "0xE71C189C7D8862EfDa0D9E031157199D2F3B4893",
-  //   label: "RiskCouncil plamsa",
-  // },
+  {
+    chainPrefix: "plasma",
+    address: "0xE71C189C7D8862EfDa0D9E031157199D2F3B4893",
+    label: "RiskCouncil plamsa",
+  },
 
   {
     chainPrefix: "sonic",
     address: "0x1dE39A17a9Fa8c76899fff37488482EEb7835d04",
     label: "RiskCouncil Sonic",
   },
-
-  // {
-  //   chainPrefix: "bob",
-  //   address: "0xE71C189C7D8862EfDa0D9E031157199D2F3B4893",
-  //   label: "RiskCouncil Bob",
-  // },
 ].map(({ chainPrefix, address, label }) => {
   return {
     chainPrefix,
