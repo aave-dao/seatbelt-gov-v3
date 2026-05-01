@@ -26,9 +26,9 @@ import {ChainIds} from "solidity-utils/contracts/utils/ChainHelpers.sol";
 
 contract E2EPayload is Script, ProtocolV3TestBase {
     error UnknownPool();
-    error CustomCallFailed(uint256 index);
+    error HookFailed(uint256 index);
 
-    struct CustomCall {
+    struct Hook {
         address from;
         address target;
         uint256 value;
@@ -42,8 +42,8 @@ contract E2EPayload is Script, ProtocolV3TestBase {
     function run(
         uint40 payloadId,
         address payloadsController,
-        bytes memory preCalls,
-        bytes memory postCalls
+        bytes memory preHook,
+        bytes memory postHook
     ) public {
         IPool pool = _getPool();
         if (address(pool) == address(0)) revert UnknownPool();
@@ -60,8 +60,8 @@ contract E2EPayload is Script, ProtocolV3TestBase {
             payloadId,
             payloadsController,
             false,
-            preCalls,
-            postCalls
+            preHook,
+            postHook
         );
     }
 
@@ -82,10 +82,10 @@ contract E2EPayload is Script, ProtocolV3TestBase {
         uint40 payloadId,
         address payloadsController,
         bool runE2E,
-        bytes memory preCalls,
-        bytes memory postCalls
+        bytes memory preHook,
+        bytes memory postHook
     ) public returns (ReserveConfig[] memory, ReserveConfig[] memory) {
-        _runCustomCalls(preCalls);
+        _preHook(preHook);
 
         string memory beforeString = string(
             abi.encodePacked(reportName, "_before")
@@ -98,7 +98,7 @@ contract E2EPayload is Script, ProtocolV3TestBase {
         GovV3StorageHelpers.readyPayloadId(vm, IPayloadsControllerCore(payloadsController), payloadId);
         IPayloadsControllerCore(payloadsController).executePayload(payloadId);
 
-        _runCustomCalls(postCalls);
+        _postHook(postHook);
 
         string memory afterString = string(
             abi.encodePacked(reportName, "_after")
@@ -116,9 +116,9 @@ contract E2EPayload is Script, ProtocolV3TestBase {
         return (configBefore, configAfter);
     }
 
-    function _runCustomCalls(bytes memory encoded) internal {
+    function _preHook(bytes memory encoded) internal {
         if (encoded.length == 0) return;
-        CustomCall[] memory calls = abi.decode(encoded, (CustomCall[]));
+        Hook[] memory calls = abi.decode(encoded, (Hook[]));
         for (uint256 i = 0; i < calls.length; ++i) {
             vm.deal(calls[i].from, calls[i].from.balance + 100 ether);
             vm.prank(calls[i].from);
@@ -126,7 +126,25 @@ contract E2EPayload is Script, ProtocolV3TestBase {
                 calls[i].data
             );
             if (!ok) {
-                if (ret.length == 0) revert CustomCallFailed(i);
+                if (ret.length == 0) revert HookFailed(i);
+                assembly {
+                    revert(add(ret, 0x20), mload(ret))
+                }
+            }
+        }
+    }
+
+    function _postHook(bytes memory encoded) internal {
+        if (encoded.length == 0) return;
+        Hook[] memory calls = abi.decode(encoded, (Hook[]));
+        for (uint256 i = 0; i < calls.length; ++i) {
+            vm.deal(calls[i].from, calls[i].from.balance + 100 ether);
+            vm.prank(calls[i].from);
+            (bool ok, bytes memory ret) = calls[i].target.call{value: calls[i].value}(
+                calls[i].data
+            );
+            if (!ok) {
+                if (ret.length == 0) revert HookFailed(i);
                 assembly {
                     revert(add(ret, 0x20), mload(ret))
                 }

@@ -2,7 +2,7 @@ import { ChainId, getClient } from "@bgd-labs/toolbox";
 import { execSync } from "child_process";
 import { encodeAbiParameters, Hex } from "viem";
 import { providerConfig } from "./common";
-import { CustomCall, CustomSimulation } from "./customSimulation";
+import { Hook, SimulationHooks } from "./hooks";
 
 function getChainName(chainId: number) {
   return Object.keys(ChainId)
@@ -22,9 +22,9 @@ const CALLS_ABI_PARAM = [
   },
 ] as const;
 
-function encodeCalls(calls: CustomCall[] | undefined): Hex {
+function encodeHook(hook: Hook[] | undefined): Hex {
   return encodeAbiParameters(CALLS_ABI_PARAM, [
-    (calls ?? []).map((c) => ({
+    (hook ?? []).map((c) => ({
       from: c.from,
       target: c.target,
       value: c.value ?? 0n,
@@ -38,18 +38,18 @@ export function simulateViaFoundry(
     chain: bigint | number;
     payloadId: number | bigint;
     payloadsController: string;
-    custom?: CustomSimulation;
+    hooks?: SimulationHooks;
   },
   blockNumber: number | bigint,
 ) {
   const client = getClient(Number(payload.chain), {
     providerConfig,
   });
-  const hasCustom = !!(
-    payload.custom?.preCalls?.length || payload.custom?.postCalls?.length
+  const hasHooks = !!(
+    payload.hooks?.preHook?.length || payload.hooks?.postHook?.length
   );
-  const sigArgs = hasCustom
-    ? `--sig "run(uint40,address,bytes,bytes)" -- ${payload.payloadId} ${payload.payloadsController} ${encodeCalls(payload.custom?.preCalls)} ${encodeCalls(payload.custom?.postCalls)}`
+  const sigArgs = hasHooks
+    ? `--sig "run(uint40,address,bytes,bytes)" -- ${payload.payloadId} ${payload.payloadsController} ${encodeHook(payload.hooks?.preHook)} ${encodeHook(payload.hooks?.postHook)}`
     : `--sig "run(uint40,address)" -- ${payload.payloadId} ${payload.payloadsController}`;
   const command = [
     `FOUNDRY_PROFILE=${getChainName(Number(payload.chain))}`,

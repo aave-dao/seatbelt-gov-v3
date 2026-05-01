@@ -16,7 +16,7 @@ import {
   getPayloadStorageOverrides,
   makePayloadExecutableOnTestClient,
 } from "./tenderly-tooling/payloads-controller";
-import { CustomCall, CustomSimulation } from "./customSimulation";
+import { Hook, SimulationHooks } from "./hooks";
 
 // https://docs.tenderly.co/supported-networks
 export const CHAIN_NOT_SUPPORTED_ON_TENDERLY: number[] = [
@@ -30,7 +30,7 @@ type SimulateOnTenderlyParams = {
   executeBefore: number[];
   payloadId: number;
   payloadsController: Address;
-  custom?: CustomSimulation;
+  hooks?: SimulationHooks;
   cache: {
     logs: {
       createdLog: {
@@ -55,13 +55,35 @@ type SimulateOnTenderlyParams = {
 
 const EOA = "0xD73a92Be73EfbFcF3854433A5FcbAbF9c1316073";
 
-async function runCustomCalls(
+async function runPreHook(
   vnet: Awaited<ReturnType<typeof tenderly_createVnet>>,
   chainId: number,
-  calls: CustomCall[] | undefined,
+  hook: Hook[] | undefined,
 ) {
-  if (!calls?.length) return;
-  for (const c of calls) {
+  if (!hook?.length) return;
+  for (const c of hook) {
+    // tenderly vnets accept any `from` address; no impersonation rpc needed.
+    await vnet.testClient.setBalance({
+      address: c.from,
+      value: 10n ** 22n,
+    });
+    await vnet.walletClient.sendTransaction({
+      chain: { id: chainId } as any,
+      account: c.from,
+      to: c.target,
+      data: c.data,
+      value: c.value ?? 0n,
+    });
+  }
+}
+
+async function runPostHook(
+  vnet: Awaited<ReturnType<typeof tenderly_createVnet>>,
+  chainId: number,
+  hook: Hook[] | undefined,
+) {
+  if (!hook?.length) return;
+  for (const c of hook) {
     // tenderly vnets accept any `from` address; no impersonation rpc needed.
     await vnet.testClient.setBalance({
       address: c.from,
@@ -82,7 +104,7 @@ export async function simulateOnTenderly({
   executeBefore,
   payloadId,
   payloadsController,
-  custom,
+  hooks,
   cache,
 }: SimulateOnTenderlyParams) {
   const tenderlyConfig = {
@@ -132,8 +154,8 @@ export async function simulateOnTenderly({
         console.error(`Failed to execute payload ${before}: ${e}`);
       }
     }
-    // run user-provided pre-execution calls (impersonated)
-    await runCustomCalls(vnet, chainId, custom?.preCalls);
+    // run user-provided pre-hook (impersonated)
+    await runPreHook(vnet, chainId, hooks?.preHook);
     // prepare the actual payload execution via state overrides
     await makePayloadExecutableOnTestClient(
       vnet.testClient,
@@ -169,8 +191,8 @@ export async function simulateOnTenderly({
       functionName: "executePayload",
       args: [payloadId],
     });
-    // run user-provided post-execution calls (impersonated)
-    await runCustomCalls(vnet, chainId, custom?.postCalls);
+    // run user-provided post-hook (impersonated)
+    await runPostHook(vnet, chainId, hooks?.postHook);
     const report = await renderTenderlyReport({
       payloadId: payloadId,
       payload: cache.payload,
@@ -198,9 +220,9 @@ export async function simulateOnTenderly({
     return report;
   } catch (e) {
     console.log(e);
-    if (custom?.preCalls?.length || custom?.postCalls?.length) {
+    if (hooks?.preHook?.length || hooks?.postHook?.length) {
       throw new Error(
-        "custom simulation requires the Tenderly vnet path; vnet creation failed.",
+        "simulation hooks require the Tenderly vnet path; vnet creation failed.",
       );
     }
     console.log(
