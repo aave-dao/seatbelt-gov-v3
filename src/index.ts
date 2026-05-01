@@ -13,6 +13,7 @@ import { generatePayloadsStrategy } from "./strategy";
 import { simulateViaFoundry } from "./foundry";
 import { storeSimulationState } from "./simulationCache";
 import { getCache } from "./cache/logs";
+import { isPayloadSkipped } from "./common";
 
 function getPayloadFileName(
   chain: number,
@@ -48,6 +49,13 @@ async function simulatePayload(
     );
   }
   for (const payloadId of payloadIds) {
+    if (isPayloadSkipped(chainId, payloadsController, payloadId)) {
+      console.info(
+        chainId.toString(),
+        `Skipping payload ${payloadId} on ${payloadsController} (in skip list)`,
+      );
+      continue;
+    }
     console.info(chainId.toString(), `Simulating ${payloadId}`);
     const fileName = getPayloadFileName(chainId, payloadsController, payloadId);
     const cache = await getCache(chainId, payloadsController, payloadId);

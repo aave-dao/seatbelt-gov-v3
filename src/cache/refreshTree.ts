@@ -14,7 +14,7 @@ import {
   IGovernance_ABI,
 } from "@bgd-labs/toolbox";
 import tree from "./tree.json";
-import { providerConfig } from "../common";
+import { providerConfig, SKIPPED_PROPOSAL_IDS } from "../common";
 import { refreshLogs } from "./logs";
 
 const mainnetClient = createPublicClient({
@@ -54,6 +54,10 @@ export interface TreeStructure {
   const treeCopy = tree as TreeStructure;
   const count = await governanceContract.read.getProposalsCount();
   for (let i = 0; i < count; i++) {
+    if (SKIPPED_PROPOSAL_IDS.has(i)) {
+      delete treeCopy.governance[i];
+      continue;
+    }
     if (
       !treeCopy.governance[i] ||
       !isProposalFinal(treeCopy.governance[i].state)
