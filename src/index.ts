@@ -13,7 +13,7 @@ import { generatePayloadsStrategy } from "./strategy";
 import { simulateViaFoundry } from "./foundry";
 import { storeSimulationState } from "./simulationCache";
 import { getCache } from "./cache/logs";
-import { isPayloadSkipped } from "./common";
+import { getSimulationHooks } from "./hooks";
 
 function getPayloadFileName(
   chain: number,
@@ -49,13 +49,6 @@ async function simulatePayload(
     );
   }
   for (const payloadId of payloadIds) {
-    if (isPayloadSkipped(chainId, payloadsController, payloadId)) {
-      console.info(
-        chainId.toString(),
-        `Skipping payload ${payloadId} on ${payloadsController} (in skip list)`,
-      );
-      continue;
-    }
     console.info(chainId.toString(), `Simulating ${payloadId}`);
     const fileName = getPayloadFileName(chainId, payloadsController, payloadId);
     const cache = await getCache(chainId, payloadsController, payloadId);
@@ -68,6 +61,7 @@ async function simulatePayload(
       payloadsController,
       payloadId,
     );
+    const hooks = getSimulationHooks(chainId, payloadsController, payloadId);
 
     const forceForge = process.env.FORCE_FORGE === "true";
     const shouldUseFoundry =
@@ -79,7 +73,7 @@ async function simulatePayload(
         let blockNumber = BigInt(0); // current
         if (cache.executedLog)
           blockNumber = BigInt(cache.executedLog.blockNumber) - BigInt(1);
-        simulateViaFoundry({ chain: chainId, payloadId, payloadsController }, blockNumber);
+        simulateViaFoundry({ chain: chainId, payloadId, payloadsController, hooks }, blockNumber);
         storeSimulationState(
           chainId,
           payloadsController,
@@ -100,6 +94,7 @@ async function simulatePayload(
           payloadsController,
           payloadId: payloadId,
           executeBefore: strategy.executeBefore,
+          hooks,
           cache: { payload: strategy.payload, logs: cache },
         });
 
@@ -123,7 +118,7 @@ async function simulatePayload(
           let blockNumber = BigInt(0); // current
           if (cache.executedLog)
             blockNumber = BigInt(cache.executedLog.blockNumber) - BigInt(1);
-          simulateViaFoundry({ chain: chainId, payloadId, payloadsController }, blockNumber);
+          simulateViaFoundry({ chain: chainId, payloadId, payloadsController, hooks }, blockNumber);
           storeSimulationState(
             chainId,
             payloadsController,
