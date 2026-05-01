@@ -14,6 +14,7 @@ import { simulateViaFoundry } from "./foundry";
 import { storeSimulationState } from "./simulationCache";
 import { getCache } from "./cache/logs";
 import { isPayloadSkipped } from "./common";
+import { getCustomSimulation } from "./customSimulation";
 
 function getPayloadFileName(
   chain: number,
@@ -68,6 +69,7 @@ async function simulatePayload(
       payloadsController,
       payloadId,
     );
+    const custom = getCustomSimulation(chainId, payloadsController, payloadId);
 
     const forceForge = process.env.FORCE_FORGE === "true";
     const shouldUseFoundry =
@@ -79,7 +81,7 @@ async function simulatePayload(
         let blockNumber = BigInt(0); // current
         if (cache.executedLog)
           blockNumber = BigInt(cache.executedLog.blockNumber) - BigInt(1);
-        simulateViaFoundry({ chain: chainId, payloadId, payloadsController }, blockNumber);
+        simulateViaFoundry({ chain: chainId, payloadId, payloadsController, custom }, blockNumber);
         storeSimulationState(
           chainId,
           payloadsController,
@@ -100,6 +102,7 @@ async function simulatePayload(
           payloadsController,
           payloadId: payloadId,
           executeBefore: strategy.executeBefore,
+          custom,
           cache: { payload: strategy.payload, logs: cache },
         });
 
@@ -123,7 +126,7 @@ async function simulatePayload(
           let blockNumber = BigInt(0); // current
           if (cache.executedLog)
             blockNumber = BigInt(cache.executedLog.blockNumber) - BigInt(1);
-          simulateViaFoundry({ chain: chainId, payloadId, payloadsController }, blockNumber);
+          simulateViaFoundry({ chain: chainId, payloadId, payloadsController, custom }, blockNumber);
           storeSimulationState(
             chainId,
             payloadsController,

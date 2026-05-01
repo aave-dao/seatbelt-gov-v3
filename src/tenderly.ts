@@ -16,6 +16,7 @@ import {
   getPayloadStorageOverrides,
   makePayloadExecutableOnTestClient,
 } from "./tenderly-tooling/payloads-controller";
+import { CustomCall, CustomSimulation } from "./customSimulation";
 
 // https://docs.tenderly.co/supported-networks
 export const CHAIN_NOT_SUPPORTED_ON_TENDERLY: number[] = [
@@ -29,6 +30,7 @@ type SimulateOnTenderlyParams = {
   executeBefore: number[];
   payloadId: number;
   payloadsController: Address;
+  custom?: CustomSimulation;
   cache: {
     logs: {
       createdLog: {
@@ -53,11 +55,34 @@ type SimulateOnTenderlyParams = {
 
 const EOA = "0xD73a92Be73EfbFcF3854433A5FcbAbF9c1316073";
 
+async function runCustomCalls(
+  vnet: Awaited<ReturnType<typeof tenderly_createVnet>>,
+  chainId: number,
+  calls: CustomCall[] | undefined,
+) {
+  if (!calls?.length) return;
+  for (const c of calls) {
+    // tenderly vnets accept any `from` address; no impersonation rpc needed.
+    await vnet.testClient.setBalance({
+      address: c.from,
+      value: 10n ** 22n,
+    });
+    await vnet.walletClient.sendTransaction({
+      chain: { id: chainId } as any,
+      account: c.from,
+      to: c.target,
+      data: c.data,
+      value: c.value ?? 0n,
+    });
+  }
+}
+
 export async function simulateOnTenderly({
   chainId,
   executeBefore,
   payloadId,
   payloadsController,
+  custom,
   cache,
 }: SimulateOnTenderlyParams) {
   const tenderlyConfig = {
@@ -107,6 +132,8 @@ export async function simulateOnTenderly({
         console.error(`Failed to execute payload ${before}: ${e}`);
       }
     }
+    // run user-provided pre-execution calls (impersonated)
+    await runCustomCalls(vnet, chainId, custom?.preCalls);
     // prepare the actual payload execution via state overrides
     await makePayloadExecutableOnTestClient(
       vnet.testClient,
@@ -142,6 +169,8 @@ export async function simulateOnTenderly({
       functionName: "executePayload",
       args: [payloadId],
     });
+    // run user-provided post-execution calls (impersonated)
+    await runCustomCalls(vnet, chainId, custom?.postCalls);
     const report = await renderTenderlyReport({
       payloadId: payloadId,
       payload: cache.payload,
@@ -169,6 +198,11 @@ export async function simulateOnTenderly({
     return report;
   } catch (e) {
     console.log(e);
+    if (custom?.preCalls?.length || custom?.postCalls?.length) {
+      throw new Error(
+        "custom simulation requires the Tenderly vnet path; vnet creation failed.",
+      );
+    }
     console.log(
       "error simulating against a vnet, trying against the simulation endpoint",
     );
