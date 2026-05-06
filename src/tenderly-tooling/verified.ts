@@ -31,6 +31,28 @@ export function verificationStatusToString(status: VerificationStatus) {
   }
 }
 
+// Process-level cache: keyed by `${chainId}:${lowercaseAddress}` → { name } or null for unverified.
+// Avoids re-fetching Etherscan source code for the same address across many simulations (e.g. the cron).
+const sourceCodeCache: Record<string, { ContractName: string } | null> = {};
+
+async function getCachedSourceCode(
+  chainId: number,
+  address: Address,
+  apiKey?: string,
+  apiUrl?: string,
+): Promise<{ ContractName: string } | null> {
+  const key = `${chainId}:${address.toLowerCase()}`;
+  if (key in sourceCodeCache) return sourceCodeCache[key];
+  try {
+    const result = await getSourceCode({ chainId, address, apiKey, apiUrl });
+    sourceCodeCache[key] = { ContractName: result.ContractName };
+    return sourceCodeCache[key];
+  } catch (e) {
+    sourceCodeCache[key] = null;
+    return null;
+  }
+}
+
 /**
  * Iterates a list of addresses and returns their verification status
  * @param param0
@@ -74,20 +96,20 @@ export async function getVerificationStatus({
       });
       continue;
     }
-    try {
-      const code = await getSourceCode({
-        chainId: client.chain!.id,
-        address,
-        apiKey,
-        apiUrl,
-      });
+    const source = await getCachedSourceCode(
+      client.chain!.id,
+      address,
+      apiKey,
+      apiUrl,
+    );
+    if (source) {
       results.push({
         address,
-        name: code.ContractName,
+        name: source.ContractName,
         status: VerificationStatus.CONTRACT,
         new: true,
       });
-    } catch (e) {
+    } else {
       results.push({
         address,
         status: VerificationStatus.ERROR,
