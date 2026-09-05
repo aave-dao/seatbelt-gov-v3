@@ -12,6 +12,7 @@ import { providerConfig } from "./common";
 import { eventDb } from "@aave-dao/aave-helpers-js";
 import { renderTenderlyReport } from "./tenderly-tooling/tenderly-report";
 import { getMdContractName } from "./tenderly-tooling/utils";
+import { prepareGas } from "./tenderly-tooling/gas";
 import {
   getPayloadStorageOverrides,
   makePayloadExecutableOnTestClient,
@@ -20,10 +21,6 @@ import {
 // https://docs.tenderly.co/supported-networks
 export const CHAIN_NOT_SUPPORTED_ON_TENDERLY: number[] = [ChainId.zkEVM];
 export const NO_V_NET: number[] = [ChainId.zksync];
-export const UNCAPPED_GAS_LIMIT_CHAINS: number[] = [
-  ChainId.mantle,
-  ChainId.megaeth,
-];
 
 type SimulateOnTenderlyParams = {
   chainId: number;
@@ -125,7 +122,6 @@ export async function simulateOnTenderly({
       }),
       block_number: blockNumber,
       transaction_index: 0,
-      gas_limit: UNCAPPED_GAS_LIMIT_CHAINS.includes(chainId) ? 0 : 16_000_000,
       gas_price: "0",
       value: "0",
       access_list: [],
@@ -133,6 +129,20 @@ export async function simulateOnTenderly({
       save: true,
       source: "dashboard",
     };
+    const gas = await prepareGas({
+      client: getClient(chainId, { providerConfig }),
+      blockNumber: vnet.vnet.fork_config.block_number,
+      estimate: (gasLimit) =>
+        vnet.testClient.estimateGas({
+          account: EOA,
+          to: payloadsController,
+          data: simPayload.input,
+          gas: gasLimit,
+          gasPrice: 0n,
+          value: 0n,
+        }),
+    });
+    Object.assign(simPayload, gas.vnetOverrides);
     const simResult = await vnet.simulate(simPayload);
     // after simulation execute payload
     await vnet.walletClient.writeContract({
@@ -142,12 +152,14 @@ export async function simulateOnTenderly({
       address: payloadsController,
       functionName: "executePayload",
       args: [payloadId],
+      ...gas.transactionOverrides,
     });
     const report = await renderTenderlyReport({
       payloadId: payloadId,
       payload: cache.payload,
       onchainLogs: cache.logs as any,
       sim: simResult,
+      gasReport: gas.render(simResult),
       client: vnet.testClient,
       config: {
         etherscanApiKey: process.env.ETHERSCAN_API_KEY!,
@@ -188,7 +200,6 @@ export async function simulateOnTenderly({
         args: [payloadId],
       }),
       block_number: blockNumber,
-      gas: UNCAPPED_GAS_LIMIT_CHAINS.includes(chainId) ? 0 : 16_000_000,
       state_objects: {
         [payloadsController]: {
           storage: overrides.reduce(
@@ -202,12 +213,18 @@ export async function simulateOnTenderly({
       },
       save: true,
     } as const;
+    const gas = await prepareGas({
+      client: getClient(chainId, { providerConfig }),
+      blockNumber: blockNumber < 0 ? "latest" : blockNumber,
+    });
+    Object.assign(simPayload, { gas: Number(gas.gasLimit) });
     const simResult = await tenderly_sim(tenderlyConfig, simPayload);
     const report = await renderTenderlyReport({
       payload: cache.payload,
       payloadId: payloadId,
       onchainLogs: cache.logs as any,
       sim: simResult,
+      gasReport: gas.render(simResult),
       client: getClient(chainId, {
         providerConfig,
       }),
