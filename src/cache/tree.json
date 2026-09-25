@@ -9499,6 +9499,26 @@
           "payloadsController": "0xdAbad81aF85554E9ae636395611C58F7eC1aAEc5"
         }
       ]
+    },
+    "523": {
+      "state": 1,
+      "payloads": [
+        {
+          "chain": 1,
+          "payloadId": 471,
+          "payloadsController": "0xdAbad81aF85554E9ae636395611C58F7eC1aAEc5"
+        },
+        {
+          "chain": 43114,
+          "payloadId": 125,
+          "payloadsController": "0x1140CB7CAfAcC745771C2Ea31e7B5C653c5d0B80"
+        },
+        {
+          "chain": 8453,
+          "payloadId": 117,
+          "payloadsController": "0x2DC219E716793fb4b21548C0f009Ba3Af753ab01"
+        }
+      ]
     }
   },
   "payloads": {
@@ -10703,6 +10723,9 @@
         },
         "470": {
           "522": true
+        },
+        "471": {
+          "523": true
         }
       }
     },
@@ -12465,6 +12488,9 @@
         },
         "116": {
           "521": true
+        },
+        "117": {
+          "523": true
         }
       }
     },
@@ -13321,6 +13347,9 @@
         },
         "124": {
           "521": true
+        },
+        "125": {
+          "523": true
         }
       }
     },
