@@ -13,8 +13,8 @@
   "author": "BGD Labs",
   "license": "MIT",
   "dependencies": {
-    "@aave-dao/aave-address-book": "^4.61.0",
-    "@aave-dao/aave-helpers-js": "^1.3.6",
+    "@aave-dao/aave-address-book": "^4.70.2",
+    "@aave-dao/aave-helpers-js": "file:./vendor/aave-dao-aave-helpers-js-2.0.0-storage-layout.d21ac3e.tgz",
     "@aave-dao/toolbox": "^0.7.0",
     "commander": "^11.1.0",
     "dotenv": "^16.3.1",

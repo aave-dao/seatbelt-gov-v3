@@ -1,6 +1,7 @@
 import { AbiEvent, Address, Client, Hash, Hex, zeroAddress } from "viem";
 import { getV4Addresses } from "../v4/targets";
 import { enhanceLogs, parseLogs } from "./logs";
+import { renderDecodedStorageSection } from "./decoded-storage";
 import {
   checkForSelfdestruct,
   SelfdestructCheckState,
@@ -225,6 +226,15 @@ ${payload.actions
       getContractName(sim, address),
     );
   }
+
+  report += "\n\n";
+  report += renderDecodedStorageSection(
+    client.chain!.id,
+    sim.transaction.transaction_info.state_diff ?? [],
+    sim.transaction.transaction_info.logs ?? [],
+    eventCache,
+    (address) => getContractName(sim, address),
+  );
 
   if (verified.length) {
     report +=
