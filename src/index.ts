@@ -24,6 +24,9 @@ function getPayloadFileName(
   return path.join(storagePath, `${payloadId}.md`);
 }
 
+// primary simulation failures; reported at exit so the CI job goes red
+const failures: string[] = [];
+
 async function simulatePayload(
   chainId: number,
   payloadsController: Address,
@@ -85,6 +88,9 @@ async function simulatePayload(
       } catch (e) {
         console.log("simulating on foundry failed");
         console.log(e);
+        failures.push(
+          `${chainId} ${payloadsController} ${payloadId}: foundry: ${e}`,
+        );
         storeSimulationState(chainId, payloadsController, payloadId, -1);
       }
     } else {
@@ -111,6 +117,9 @@ async function simulatePayload(
           `Simulating payload ${payloadId} on ${payloadsController} failed`,
         );
         console.log(e);
+        failures.push(
+          `${chainId} ${payloadsController} ${payloadId}: tenderly: ${e}`,
+        );
         storeSimulationState(chainId, payloadsController, payloadId, -1);
 
         // Fallback to foundry
@@ -197,6 +206,11 @@ program
             .flat()
             .map((id: string) => Number(id)),
       );
+    }
+    if (failures.length > 0) {
+      console.error(`${failures.length} simulation(s) failed:`);
+      for (const failure of failures) console.error(`  ${failure}`);
+      process.exitCode = 1;
     }
   })
   .showHelpAfterError()
