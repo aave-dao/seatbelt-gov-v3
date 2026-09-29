@@ -1,0 +1,38 @@
+src/tenderly-tooling/state.ts
+  h_739c25e72c37fb 8
+src/foundry.ts
+  h_739c25e72c37fb 1,15
+src/tenderly.ts
+  h_739c25e72c37fb 9
+src/v4/targets.ts
+  h_739c25e72c37fb 1
+src/index.ts
+  h_739c25e72c37fb 6,76,123
+src/cache/refreshTree.ts
+  h_739c25e72c37fb 15
+src/cache/logs.ts
+  h_739c25e72c37fb 8
+src/tenderly-tooling/tenderly-report.ts
+  h_739c25e72c37fb 25,195-196
+src/tenderly-tooling/utils.ts
+  h_739c25e72c37fb 15
+src/tenderly-tooling/verified.spec.ts
+  h_739c25e72c37fb 2
+src/tenderly-tooling/payloads-controller.ts
+  h_739c25e72c37fb 15
+src/tenderly-tooling/verified.ts
+  h_739c25e72c37fb 2
+src/strategy.ts
+  h_739c25e72c37fb 9
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.9",
+  "base_commit_sha": "da1248efcc7ce1e7384e88155406821965eb9e53",
+  "prompts": {},
+  "humans": {
+    "h_739c25e72c37fb": {
+      "author": "DhairyaSethi <55102840+DhairyaSethi@users.noreply.github.com>"
+    }
+  }
+}

@@ -1,0 +1,24 @@
+reports/multisig/1/0x187AAE17d4931310B3fc75743e7F16Bdc9eD77e9/global-dollar-tokenization-spokes-activation.md
+  s_4a7481846e155d::t_60b4e08b3dda71 1,4-5,7-11,17-18,28,32,36,40,44,48,52,56,90,92-97
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "e6738b26222e3d3664d7df835bc91473777ff656",
+  "prompts": {},
+  "humans": {
+    "h_0f977de3f043fc": {
+      "author": "Alexandru Niculae <43644109+avniculae@users.noreply.github.com>"
+    }
+  },
+  "sessions": {
+    "s_4a7481846e155d": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ec9089b4-1ab8-4297-a582-2d48da2e8b44",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Alexandru Niculae <43644109+avniculae@users.noreply.github.com>"
+    }
+  }
+}

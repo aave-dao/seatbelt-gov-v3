@@ -1,0 +1,14 @@
+src/tenderly-tooling/utils.ts
+  h_739c25e72c37fb 43-45
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.5",
+  "base_commit_sha": "0c19a1ba8106ae14dcd3fde394e77246ef6e4900",
+  "prompts": {},
+  "humans": {
+    "h_739c25e72c37fb": {
+      "author": "DhairyaSethi <55102840+DhairyaSethi@users.noreply.github.com>"
+    }
+  }
+}

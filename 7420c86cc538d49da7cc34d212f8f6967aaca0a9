@@ -1,0 +1,26 @@
+src/tenderly.ts
+  h_739c25e72c37fb 191
+  s_7d66dd594d0b76::t_d031489a489b5e 23-26
+  s_7d66dd594d0b76::t_7547cd2d5d523f 128
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "7420c86cc538d49da7cc34d212f8f6967aaca0a9",
+  "prompts": {},
+  "humans": {
+    "h_739c25e72c37fb": {
+      "author": "DhairyaSethi <55102840+DhairyaSethi@users.noreply.github.com>"
+    }
+  },
+  "sessions": {
+    "s_7d66dd594d0b76": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "55ac5a5a-4824-4df1-99f2-20bb1155f94b",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "DhairyaSethi <55102840+DhairyaSethi@users.noreply.github.com>"
+    }
+  }
+}

@@ -1,0 +1,55 @@
+README.md
+  s_ac26fab67ea025::t_589c2a1063991c 104-118,124
+src/tenderly-tooling/safe-report.ts
+  s_ac26fab67ea025::t_020eba8d8e91fa 53-57
+  s_ac26fab67ea025::t_bad73f050c060e 1-52,58-68
+src/safe-tooling/tx-builder.spec.ts
+  s_ac26fab67ea025::t_020eba8d8e91fa 70-73,80-81
+  s_ac26fab67ea025::t_d3560339fd7b87 1-69,74-79,82-95
+src/safe.ts
+  s_ac26fab67ea025::t_020eba8d8e91fa 174-177
+  s_ac26fab67ea025::t_3794e1296e1da7 42-45
+  s_ac26fab67ea025::t_d55f73e05a5c68 1-41,46-173,178-204
+src/safe-tooling/tx-builder.ts
+  s_ac26fab67ea025::t_7b9bd7baa549c2 168
+  s_ac26fab67ea025::t_589b052fa6e80d 1-81,85-88,92-167,169-179,184-207,213
+  s_ac26fab67ea025::t_be105a7de197ad 208-212
+  s_ac26fab67ea025::t_140fdb19853178 180
+  s_ac26fab67ea025::t_020eba8d8e91fa 82-84,89-91,181-183
+src/tenderly-tooling/tenderly-report.ts
+  s_ac26fab67ea025::t_1991317379e2cb 29,42-49
+  s_ac26fab67ea025::t_e84d588ef7518d 111-130
+  s_ac26fab67ea025::t_1e5a4217290745 50-51
+package.json
+  s_ac26fab67ea025::t_707a6414f59646 17
+  s_ac26fab67ea025::t_7f6e5718db697e 8
+.gitignore
+  s_ac26fab67ea025::t_5af4c9fa3bb942 10
+src/tenderly.ts
+  s_ac26fab67ea025::t_90d28621849a54 235
+bun.lock
+  s_ac26fab67ea025::t_e54ae6ed63f734 8,21,281-282
+reports/multisig/1/0x187AAE17d4931310B3fc75743e7F16Bdc9eD77e9/paxos-tokenization-spokes-activation.md
+  s_ac26fab67ea025::t_e08e1780d85fb3 1-97
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "e2a55d6b14fa4b7889313134c4091285846284c7",
+  "prompts": {},
+  "humans": {
+    "h_0f977de3f043fc": {
+      "author": "Alexandru Niculae <43644109+avniculae@users.noreply.github.com>"
+    }
+  },
+  "sessions": {
+    "s_ac26fab67ea025": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "d062ecab-8b17-4d0e-9d3f-e6ccfc8d9fbd",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Alexandru Niculae <43644109+avniculae@users.noreply.github.com>"
+    }
+  }
+}

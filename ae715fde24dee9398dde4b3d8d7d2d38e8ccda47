@@ -1,0 +1,26 @@
+src/tenderly-tooling/utils.ts
+  s_c102b81460c49f::t_f5f190923bf361 22-36
+  s_c102b81460c49f::t_0edddd6ddcc207 21
+src/tenderly-tooling/utils.spec.ts
+  s_c102b81460c49f::t_e1b590f7e79b2e 1-32,36-37
+  s_c102b81460c49f::t_cb7e83493020f2 33-35
+src/tenderly-tooling/tenderly-report.ts
+  s_c102b81460c49f::t_91fe9719e3aa86 114,116-118
+  s_c102b81460c49f::t_3f9eabd1faa8fe 27-32
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "ae715fde24dee9398dde4b3d8d7d2d38e8ccda47",
+  "prompts": {},
+  "sessions": {
+    "s_c102b81460c49f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "d8eef528-acea-4861-aa79-0f7742ca4f2e",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "DhairyaSethi <55102840+DhairyaSethi@users.noreply.github.com>"
+    }
+  }
+}

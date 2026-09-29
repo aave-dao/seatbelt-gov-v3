@@ -1,0 +1,25 @@
+cache/196/0x80e11cB895a23C901a990239E5534054C66476B5/11.json
+  s_ba6e068993621c::t_a4b8959a5a5186 1
+package.json
+  s_ba6e068993621c::t_249d32368d8cbe 18
+reports/payloads/196/0x80e11cB895a23C901a990239E5534054C66476B5/11.md
+  s_ba6e068993621c::t_a4b8959a5a5186 15-16,20,43-44,46,71
+bun.lock
+  s_ba6e068993621c::t_f79b58fa6471a7 10,25,281-282
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "a2f330474b606ccde689ad01ae0b2f7809ce6ddb",
+  "prompts": {},
+  "sessions": {
+    "s_ba6e068993621c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b22efe11-2e23-4b49-bfb2-1494a3d75a84",
+        "model": "claude-fable-5"
+      },
+      "human_author": "DhairyaSethi <55102840+DhairyaSethi@users.noreply.github.com>"
+    }
+  }
+}

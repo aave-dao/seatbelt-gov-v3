@@ -1,0 +1,30 @@
+src/tenderly.ts
+  s_932f2f097def14::t_5d304c84ac2802 168
+  s_932f2f097def14::t_7462429add124f 78,80
+cache/1/0xdAbad81aF85554E9ae636395611C58F7eC1aAEc5/429.json
+  s_932f2f097def14::t_3112c7055ade47 1
+reports/payloads/1/0xdAbad81aF85554E9ae636395611C58F7eC1aAEc5/429.md
+  s_932f2f097def14::t_3112c7055ade47 5,11
+reports/payloads/1/0xdAbad81aF85554E9ae636395611C58F7eC1aAEc5/420.md
+  s_932f2f097def14::t_58acca2cf5aab5 35,37,39-40,43,45,47-48,51-53,91,95-96,100-103,108-109,111,123,127,129-131,135,141,147-148,155-156,159,161-162,179,191,195,199,203,205,211-213,223,227-228,231,235-236,239,241,243-244,247,249,251,259-261,267,269,271-277
+  s_932f2f097def14::t_9535c57d6cf15b 12,15-17,19-21,23-31,54-56,80,97-99,104-107,110,115,119-122,128,136,139,144,151,153,163-165,187-188,204,206,214,220,229,232-233,255,257,263-265,268,270,284-286,291-292,302-304,309-310,318,345-346,368
+  s_932f2f097def14::t_4a7ba489811325 5,10
+src/cache/logs.ts
+  s_932f2f097def14::t_489c8f0a5667fb 52-58,60-65,67-71,73-78
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.11",
+  "base_commit_sha": "fa94ba2b9571a6fffd638f2e070605e0c367983b",
+  "prompts": {},
+  "sessions": {
+    "s_932f2f097def14": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "931eb41a-b4ae-461f-8a08-4312a8c7d35a",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "DhairyaSethi <55102840+DhairyaSethi@users.noreply.github.com>"
+    }
+  }
+}

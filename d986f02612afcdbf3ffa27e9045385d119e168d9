@@ -1,0 +1,25 @@
+reports/payloads/143/0x442CA936e5E6Db875357d0A16481145c96dd9a82/0.md
+  s_71e4f275fda9dd::t_88b77368992f64 1-638
+cache/143/0x442CA936e5E6Db875357d0A16481145c96dd9a82/0.json
+  s_71e4f275fda9dd::t_88b77368992f64 1
+src/cache/cache.json
+  s_71e4f275fda9dd::t_3c654a2aeb09b7 101-104
+src/cache/143:0x442CA936e5E6Db875357d0A16481145c96dd9a82.json
+  s_71e4f275fda9dd::t_3c654a2aeb09b7 1-35
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.9",
+  "base_commit_sha": "d986f02612afcdbf3ffa27e9045385d119e168d9",
+  "prompts": {},
+  "sessions": {
+    "s_71e4f275fda9dd": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b76c8f08-4e66-4fcc-a721-fffe61b50340",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "DhairyaSethi <55102840+DhairyaSethi@users.noreply.github.com>"
+    }
+  }
+}

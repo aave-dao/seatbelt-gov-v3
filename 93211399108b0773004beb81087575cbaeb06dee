@@ -1,0 +1,25 @@
+.github/workflows/trigger.yaml
+  s_71e4f275fda9dd::t_77b4f5b5c392dd 101
+  s_71e4f275fda9dd::t_f87eb15f6e486c 103-105
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.7",
+  "base_commit_sha": "93211399108b0773004beb81087575cbaeb06dee",
+  "prompts": {},
+  "humans": {
+    "h_739c25e72c37fb": {
+      "author": "DhairyaSethi <55102840+DhairyaSethi@users.noreply.github.com>"
+    }
+  },
+  "sessions": {
+    "s_71e4f275fda9dd": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b76c8f08-4e66-4fcc-a721-fffe61b50340",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "DhairyaSethi <55102840+DhairyaSethi@users.noreply.github.com>"
+    }
+  }
+}
