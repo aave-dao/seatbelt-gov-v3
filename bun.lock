@@ -6,7 +6,7 @@
       "name": "seatbelt-gov-v3",
       "dependencies": {
         "@aave-dao/aave-address-book": "^4.70.2",
-        "@aave-dao/aave-helpers-js": "file:./vendor/aave-dao-aave-helpers-js-2.0.0-storage-layout.d21ac3e.tgz",
+        "@aave-dao/aave-helpers-js": "file:./vendor/aave-dao-aave-helpers-js-2.0.0-storage-layout.5659314.tgz",
         "@aave-dao/toolbox": "^0.7.0",
         "commander": "^11.1.0",
         "dotenv": "^16.3.1",
@@ -20,7 +20,7 @@
   "packages": {
     "@aave-dao/aave-address-book": ["@aave-dao/aave-address-book@4.70.2", "", { "peerDependencies": { "viem": "^2.23.5" } }, "sha512-jbDUx9TqLcfV0CtU1kMptUk7pgTuFzJvxKECmnuF1gkH7noJjtcVTZTbFIKvo8EmwMeIEULOo+sCJA0Znppn9g=="],
 
-    "@aave-dao/aave-helpers-js": ["@aave-dao/aave-helpers-js@./vendor/aave-dao-aave-helpers-js-2.0.0-storage-layout.d21ac3e.tgz", { "dependencies": { "@aave-dao/aave-address-book": "^4.70.2", "@aave-dao/toolbox": "^0.7.0", "commander": "^14.0.3", "find-object-paths": "^1.1.0", "viem": "^2.45.3", "zod": "^4.3.6" }, "bin": { "aave-helpers-js": "dist/cli.mjs" } }, "sha512-X7k/nmwHRvWsyv6a7Ulqhkrps/sT+UiZ7ug/g5MDbnFPhhrQ++/FOJuNOuTcPOriQZIOS3cTiEH9vfiroqCkvw=="],
+    "@aave-dao/aave-helpers-js": ["@aave-dao/aave-helpers-js@./vendor/aave-dao-aave-helpers-js-2.0.0-storage-layout.5659314.tgz", { "dependencies": { "@aave-dao/aave-address-book": "^4.70.2", "@aave-dao/toolbox": "^0.7.0", "commander": "^14.0.3", "find-object-paths": "^1.1.0", "viem": "^2.45.3", "zod": "^4.3.6" }, "bin": { "aave-helpers-js": "dist/cli.mjs" } }, "sha512-yhD2nHFzce4f+/Bqp17/zqKlzzjvu2iljP8P2vU7+Vev3JjZhvi858aABMabLczoeIrvTEb9mXE6kqDZilkTnw=="],
 
     "@aave-dao/toolbox": ["@aave-dao/toolbox@0.7.0", "", { "dependencies": { "bs58": "^6.0.0", "diff": "^8.0.3", "eventsource": "^4.1.0", "js-yaml": "^4.1.0" }, "peerDependencies": { "prettier": "^3.5.2", "prettier-plugin-solidity": "^1.0.0", "viem": "^2.45.0" } }, "sha512-61+EdhZAVDtmFleKFJFewM4Fy0+pgVdi2IlZoGFRyJPErnC6rhxzM3P1yhQdNmoQrVrhhmy80WQh+I0Hg47rlA=="],
 
