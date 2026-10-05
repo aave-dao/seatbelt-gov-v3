@@ -5,24 +5,24 @@
     "": {
       "name": "seatbelt-gov-v3",
       "dependencies": {
-        "@aave-dao/aave-address-book": "^4.60.1",
-        "@aave-dao/aave-helpers-js": "^1.3.3",
-        "@aave-dao/toolbox": "^0.5.1",
+        "@aave-dao/aave-address-book": "^4.71.2",
+        "@aave-dao/aave-helpers-js": "^1.6.3",
+        "@aave-dao/toolbox": "^0.8.1",
         "commander": "^11.1.0",
         "dotenv": "^16.3.1",
         "prettier": "3.5.3",
         "prettier-plugin-solidity": "1.4.3",
-        "viem": "^2.45.1",
+        "viem": "^2.56.6",
         "vitest": "^3.2.4",
       },
     },
   },
   "packages": {
-    "@aave-dao/aave-address-book": ["@aave-dao/aave-address-book@4.60.1", "", { "peerDependencies": { "viem": "^2.23.5" } }, "sha512-zph4Pt3VT3E3Gm4zlH9I5eDaj6XEVJ30MixW7/U/Qhcqs1lxf4YAyzMncFGxfIdkckl+FFffcwso39uRv9PpBQ=="],
+    "@aave-dao/aave-address-book": ["@aave-dao/aave-address-book@4.71.2", "", { "peerDependencies": { "viem": "^2.23.5" } }, "sha512-EVpBDOk17xVtSAk70XWf5hbd2siPnkVVdz9l6fiuMNTJG70UinMnoz/Ax0ui43T7OT1SgD0HGvhkSiN+upE4iA=="],
 
-    "@aave-dao/aave-helpers-js": ["@aave-dao/aave-helpers-js@1.3.3", "", { "dependencies": { "@aave-dao/aave-address-book": "^4.55.0", "@aave-dao/toolbox": "^0.5.0", "commander": "^14.0.3", "find-object-paths": "^1.1.0", "viem": "^2.45.3", "zod": "^4.3.6" }, "bin": { "aave-helpers-js": "dist/cli.mjs" } }, "sha512-fVuyBysIA6CAf3iHH3VS3CNa/pXV7uLYLecIB1KFCUPqj6pxHOVffA8fLyyX8geC9FDko7EjOjlksnQNdmBBVA=="],
+    "@aave-dao/aave-helpers-js": ["@aave-dao/aave-helpers-js@1.6.3", "", { "dependencies": { "@aave-dao/aave-address-book": "^4.70.2", "@aave-dao/toolbox": "^0.7.0", "commander": "^14.0.3", "find-object-paths": "^1.1.0", "viem": "^2.45.3", "zod": "^4.3.6" }, "bin": { "aave-helpers-js": "dist/cli.mjs" } }, "sha512-KyoUBnKmOBR5DFHREHUnQyP7XtudRNnHd/axLrCWsnzw4jkvywk3A3IzmKQrqg8lccwIQ6QwUovcMHymAqBXzw=="],
 
-    "@aave-dao/toolbox": ["@aave-dao/toolbox@0.5.1", "", { "dependencies": { "bs58": "^6.0.0", "diff": "^8.0.3", "eventsource": "^4.1.0", "js-yaml": "^4.1.0" }, "peerDependencies": { "prettier": "^3.5.2", "prettier-plugin-solidity": "^1.0.0", "viem": "^2.45.0" } }, "sha512-AfxPEgS3SerAkxfgQCeSLEXVKiw9elNXgmoNpF9y98QJUBc7OVDibYyF23Jkdtt5DRfnib2tMo6nBbtBoKVffQ=="],
+    "@aave-dao/toolbox": ["@aave-dao/toolbox@0.8.1", "", { "dependencies": { "bs58": "^6.0.0", "diff": "^8.0.3", "eventsource": "^4.1.0", "js-yaml": "^4.1.0" }, "peerDependencies": { "prettier": "^3.5.2", "prettier-plugin-solidity": "^1.0.0", "viem": "^2.56.6" } }, "sha512-oAL+G8lf3AUCrYzILlP+UTdM+2Swy9YuKPYw4BuLYBuEVwfgkcGkziYHMCjpyx4pvjDaQZlxd7HijQhvFn2RdA=="],
 
     "@adraffy/ens-normalize": ["@adraffy/ens-normalize@1.11.0", "", {}, "sha512-/3DDPKHqqIqxUULp8yP4zODUY1i+2xvVWsv8A79xGWdCAG+8sb0hRh0Rk2QyOJUnnbyPUAZYcpBuRe3nS2OIUg=="],
 
@@ -216,7 +216,7 @@
 
     "nanoid": ["nanoid@3.3.11", "", { "bin": { "nanoid": "bin/nanoid.cjs" } }, "sha512-N8SpfPUnUp1bK+PMYW8qSWdl9U+wwNWI4QKxOYDy9JAro3WMX7p2OeVRF9v+347pnakNevPmiHhNmZ2HbFA76w=="],
 
-    "ox": ["ox@0.11.3", "", { "dependencies": { "@adraffy/ens-normalize": "^1.11.0", "@noble/ciphers": "^1.3.0", "@noble/curves": "1.9.1", "@noble/hashes": "^1.8.0", "@scure/bip32": "^1.7.0", "@scure/bip39": "^1.6.0", "abitype": "^1.2.3", "eventemitter3": "5.0.1" }, "peerDependencies": { "typescript": ">=5.4.0" }, "optionalPeers": ["typescript"] }, "sha512-1bWYGk/xZel3xro3l8WGg6eq4YEKlaqvyMtVhfMFpbJzK2F6rj4EDRtqDCWVEJMkzcmEi9uW2QxsqELokOlarw=="],
+    "ox": ["ox@0.14.45", "", { "dependencies": { "@adraffy/ens-normalize": "^1.11.0", "@noble/ciphers": "^1.3.0", "@noble/curves": "1.9.1", "@noble/hashes": "^1.8.0", "@scure/bip32": "^1.7.0", "@scure/bip39": "^1.6.0", "abitype": "^1.2.3", "eventemitter3": "5.0.1" }, "peerDependencies": { "typescript": ">=5.4.0" }, "optionalPeers": ["typescript"] }, "sha512-jpsQ+p0JZh9mKCxxzxz0d5qFHZZg2/O9xW18IpEC/dNXXPVqmDJ0c//9RMz0CILkbSGPA42+cbU0fC/ghwJ03w=="],
 
     "pathe": ["pathe@2.0.3", "", {}, "sha512-WUjGcAqP1gQacoQe+OBJsFA7Ld4DyXuUIjZ5cc75cLHvJ7dtNsTugphxIADwspS+AraAUePCKrSVtPLFj/F88w=="],
 
@@ -264,7 +264,7 @@
 
     "undici-types": ["undici-types@6.21.0", "", {}, "sha512-iwDZqg0QAGrg9Rav5H4n0M64c3mkR59cJ6wQp+7C4nI0gsmExaedaYLNO44eT4AtBBwjbTiGPMlt2Md0T9H9JQ=="],
 
-    "viem": ["viem@2.45.1", "", { "dependencies": { "@noble/curves": "1.9.1", "@noble/hashes": "1.8.0", "@scure/bip32": "1.7.0", "@scure/bip39": "1.6.0", "abitype": "1.2.3", "isows": "1.0.7", "ox": "0.11.3", "ws": "8.18.3" }, "peerDependencies": { "typescript": ">=5.0.4" }, "optionalPeers": ["typescript"] }, "sha512-LN6Pp7vSfv50LgwhkfSbIXftAM5J89lP9x8TeDa8QM7o41IxlHrDh0F9X+FfnCWtsz11pEVV5sn+yBUoOHNqYA=="],
+    "viem": ["viem@2.57.3", "", { "dependencies": { "@noble/curves": "1.9.1", "@noble/hashes": "1.8.0", "@scure/bip32": "1.7.0", "@scure/bip39": "1.6.0", "abitype": "1.2.3", "isows": "1.0.7", "ox": "0.14.45", "ws": "8.21.0" }, "peerDependencies": { "typescript": ">=5.0.4" }, "optionalPeers": ["typescript"] }, "sha512-441q6Z42ZU7+mTJrYAjQsBpVWK76nyGQcKOCGT6hp+tBpw1XsnTIgKaqZFLTaW5xmBN1ummEFgzFWmR05FISTg=="],
 
     "vite": ["vite@7.0.0", "", { "dependencies": { "esbuild": "^0.25.0", "fdir": "^6.4.6", "picomatch": "^4.0.2", "postcss": "^8.5.6", "rollup": "^4.40.0", "tinyglobby": "^0.2.14" }, "optionalDependencies": { "fsevents": "~2.3.3" }, "peerDependencies": { "@types/node": "^20.19.0 || >=22.12.0", "jiti": ">=1.21.0", "less": "^4.0.0", "lightningcss": "^1.21.0", "sass": "^1.70.0", "sass-embedded": "^1.70.0", "stylus": ">=0.54.8", "sugarss": "^5.0.0", "terser": "^5.16.0", "tsx": "^4.8.1", "yaml": "^2.4.2" }, "optionalPeers": ["@types/node", "jiti", "less", "lightningcss", "sass", "sass-embedded", "stylus", "sugarss", "terser", "tsx", "yaml"], "bin": { "vite": "bin/vite.js" } }, "sha512-ixXJB1YRgDIw2OszKQS9WxGHKwLdCsbQNkpJN171udl6szi/rIySHL6/Os3s2+oE4P/FLD4dxg4mD7Wust+u5g=="],
 
@@ -274,16 +274,18 @@
 
     "why-is-node-running": ["why-is-node-running@2.3.0", "", { "dependencies": { "siginfo": "^2.0.0", "stackback": "0.0.2" }, "bin": { "why-is-node-running": "cli.js" } }, "sha512-hUrmaWBdVDcxvYqnyh09zunKzROWjbZTiNy8dBEjkS7ehEDQibXJ7XvlmtbwuTclUiIyN+CyXQD4Vmko8fNm8w=="],
 
-    "ws": ["ws@8.18.3", "", { "peerDependencies": { "bufferutil": "^4.0.1", "utf-8-validate": ">=5.0.2" }, "optionalPeers": ["bufferutil", "utf-8-validate"] }, "sha512-PEIGCY5tSlUt50cqyMXfCzX+oOPqN0vuGqWzbcJ2xvnkzkq46oOpz7dQaTDBdfICb4N14+GARUDw2XV2N4tvzg=="],
+    "ws": ["ws@8.21.0", "", { "peerDependencies": { "bufferutil": "^4.0.1", "utf-8-validate": ">=5.0.2" }, "optionalPeers": ["bufferutil", "utf-8-validate"] }, "sha512-Vsp28b7DRcimFQvrqu2Wek3z1iYxDCWqHYB8Qsnk/S4RfaCQzPGPyBNuVjJV3cd6UiKtUtp6sNM77gWvzcCH+g=="],
 
     "zod": ["zod@4.3.6", "", {}, "sha512-rftlrkhHZOcjDwkGlnUtZZkvaPHCsDATp4pGpuOOMDaTdDDXF91wuVDJoWoPsKX/3YPQ5fHuF3STjcYyKr+Qhg=="],
 
-    "@aave-dao/aave-helpers-js/@aave-dao/aave-address-book": ["@aave-dao/aave-address-book@4.55.1", "", { "peerDependencies": { "viem": "^2.23.5" } }, "sha512-61qz4T51YrUNZRxMGjmgff+mJUr9IJ26sXO+KvoL0/rXP9oidumhA/ChXIDPHErzh5hG/qJSjxPZxqDytHoU3w=="],
+    "@aave-dao/aave-helpers-js/@aave-dao/toolbox": ["@aave-dao/toolbox@0.7.0", "", { "dependencies": { "bs58": "^6.0.0", "diff": "^8.0.3", "eventsource": "^4.1.0", "js-yaml": "^4.1.0" }, "peerDependencies": { "prettier": "^3.5.2", "prettier-plugin-solidity": "^1.0.0", "viem": "^2.45.0" } }, "sha512-61+EdhZAVDtmFleKFJFewM4Fy0+pgVdi2IlZoGFRyJPErnC6rhxzM3P1yhQdNmoQrVrhhmy80WQh+I0Hg47rlA=="],
 
     "@aave-dao/aave-helpers-js/commander": ["commander@14.0.3", "", {}, "sha512-H+y0Jo/T1RZ9qPP4Eh1pkcQcLRglraJaSLoyOtHxu6AapkjWVCy2Sit1QQ4x3Dng8qDlSsZEet7g5Pq06MvTgw=="],
 
     "@aave-dao/aave-helpers-js/viem": ["viem@2.46.2", "", { "dependencies": { "@noble/curves": "1.9.1", "@noble/hashes": "1.8.0", "@scure/bip32": "1.7.0", "@scure/bip39": "1.6.0", "abitype": "1.2.3", "isows": "1.0.7", "ox": "0.12.4", "ws": "8.18.3" }, "peerDependencies": { "typescript": ">=5.0.4" }, "optionalPeers": ["typescript"] }, "sha512-w8Qv5Vyo7TfXcH3vgmxRa1NRvzJCDy2aSGSRsJn3503nC/qVbgEQ+n3aj/CkqWXbloudZh97h5o5aQrQSVGy0w=="],
 
     "@aave-dao/aave-helpers-js/viem/ox": ["ox@0.12.4", "", { "dependencies": { "@adraffy/ens-normalize": "^1.11.0", "@noble/ciphers": "^1.3.0", "@noble/curves": "1.9.1", "@noble/hashes": "^1.8.0", "@scure/bip32": "^1.7.0", "@scure/bip39": "^1.6.0", "abitype": "^1.2.3", "eventemitter3": "5.0.1" }, "peerDependencies": { "typescript": ">=5.4.0" }, "optionalPeers": ["typescript"] }, "sha512-+P+C7QzuwPV8lu79dOwjBKfB2CbnbEXe/hfyyrff1drrO1nOOj3Hc87svHfcW1yneRr3WXaKr6nz11nq+/DF9Q=="],
+
+    "@aave-dao/aave-helpers-js/viem/ws": ["ws@8.18.3", "", { "peerDependencies": { "bufferutil": "^4.0.1", "utf-8-validate": ">=5.0.2" }, "optionalPeers": ["bufferutil", "utf-8-validate"] }, "sha512-PEIGCY5tSlUt50cqyMXfCzX+oOPqN0vuGqWzbcJ2xvnkzkq46oOpz7dQaTDBdfICb4N14+GARUDw2XV2N4tvzg=="],
   }
 }

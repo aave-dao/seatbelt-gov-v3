@@ -14,14 +14,14 @@
   "author": "BGD Labs",
   "license": "MIT",
   "dependencies": {
-    "@aave-dao/aave-address-book": "^4.60.1",
-    "@aave-dao/aave-helpers-js": "^1.3.3",
-    "@aave-dao/toolbox": "^0.5.1",
+    "@aave-dao/aave-address-book": "^4.71.2",
+    "@aave-dao/aave-helpers-js": "^1.6.3",
+    "@aave-dao/toolbox": "^0.8.1",
     "commander": "^11.1.0",
     "dotenv": "^16.3.1",
     "prettier": "3.5.3",
     "prettier-plugin-solidity": "1.4.3",
-    "viem": "^2.45.1",
+    "viem": "^2.56.6",
     "vitest": "^3.2.4"
   }
 }
