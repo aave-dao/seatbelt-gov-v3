@@ -81,6 +81,7 @@ jobs:
         run: bun run ci:simulate --chainId ${{ inputs.chainId }} --ids ${{ inputs.ids }} --payloadsController ${{ inputs.payloadsController}}
 
       - name: check diff
+        if: ${{ !cancelled() }}
         run: |
           if [[ -z $(git status reports -s) ]]
           then
