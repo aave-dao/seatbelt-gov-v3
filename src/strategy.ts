@@ -10,6 +10,15 @@ import {
 import treeJson from "./cache/tree.json";
 import { TreeStructure } from "./cache/refreshTree";
 
+const executeBeforeKey = (chainId: number, controller: Address, id: number) =>
+  `${chainId}:${controller.toLowerCase()}:${id}`;
+
+// payloads attached to a proposal that won't be queued, so later payloads must not assume their execution
+const SKIP_EXECUTE_BEFORE = new Set([
+  // lists the same asset as payload 128, which replaces it
+  executeBeforeKey(43114, "0x1140CB7CAfAcC745771C2Ea31e7B5C653c5d0B80", 127),
+]);
+
 export type PayloadExecutionStrategy = {
   executeBefore: number[];
   alerts: string[];
@@ -76,7 +85,12 @@ export async function generatePayloadsStrategy(
         );
     }
     return {
-      executeBefore: nonFinalizedPayloads,
+      executeBefore: nonFinalizedPayloads.filter(
+        (pl) =>
+          !SKIP_EXECUTE_BEFORE.has(
+            executeBeforeKey(chainId, payloadsController, pl),
+          ),
+      ),
       alerts,
       proposals: allAttachedProposals,
       payload,
@@ -91,7 +105,11 @@ export async function generatePayloadsStrategy(
     return {
       executeBefore: nonFilizedPayloads.filter(
         (pl) =>
-          pl != payloadId && tree.payloads[chainId]?.[payloadsController]?.[pl],
+          pl != payloadId &&
+          tree.payloads[chainId]?.[payloadsController]?.[pl] &&
+          !SKIP_EXECUTE_BEFORE.has(
+            executeBeforeKey(chainId, payloadsController, pl),
+          ),
       ),
       alerts,
       payload,
