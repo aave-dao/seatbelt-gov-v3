@@ -49,7 +49,12 @@ type RenderTenderlyReportParams = {
     sim: TenderlySimulationResponse,
     address: Address,
   ) => string;
+  // replaces the payload metadata block, for sections appended to an existing report
+  heading?: string;
+  executedBefore?: PayloadsExecutedBefore;
 };
+
+export type PayloadsExecutedBefore = { executed: number[]; failed: number[] };
 
 export async function renderTenderlyReport({
   client,
@@ -60,14 +65,18 @@ export async function renderTenderlyReport({
   eventCache = [],
   config,
   getContractName = (sim, address) => getMdContractName(sim.contracts, address),
+  heading,
+  executedBefore,
 }: RenderTenderlyReportParams) {
-  let report = `## Payload ${payloadId} on ${client.chain!.name}
+  let report = heading
+    ? `${heading}\n\n`
+    : `## Payload ${payloadId} on ${client.chain!.name}
 
 - creator: ${payload.creator}
 - maximumAccessLevelRequired: ${payload.maximumAccessLevelRequired}
 - state: ${payload.state}(${
-    (HUMAN_READABLE_PAYLOAD_STATE as any)[payload.state]
-  })
+        (HUMAN_READABLE_PAYLOAD_STATE as any)[payload.state]
+      })
 - actions:
 ${payload.actions
   .map(
@@ -80,7 +89,7 @@ ${payload.actions
   )
   .join("\n")}
 `;
-  if (createdLog) {
+  if (!heading && createdLog) {
     report += `- createdAt: [${renderUnixTime(payload.createdAt)}](${toTxLink(
       createdLog.transactionHash,
       client,
@@ -119,6 +128,13 @@ ${payload.actions
     report += `- :sos: gasUsed: ${fmtGas(gasUsed)} — **exceeds ${client.chain!.name}'s max transaction gas limit of ${fmtGas(maxTxGasLimit)}; this payload cannot be executed in a single transaction**\n`;
   } else {
     report += `- gasUsed: ${fmtGas(gasUsed)} (max tx gas limit: ${fmtGas(maxTxGasLimit)})\n`;
+  }
+
+  if (executedBefore?.executed.length || executedBefore?.failed.length) {
+    report += `- executed before: ${executedBefore.executed.join(", ") || "none"}`;
+    if (executedBefore.failed.length)
+      report += ` (reverted: ${executedBefore.failed.join(", ")})`;
+    report += "\n";
   }
 
   report += "\n";

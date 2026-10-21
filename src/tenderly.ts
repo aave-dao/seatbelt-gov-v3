@@ -6,11 +6,15 @@ import {
   tenderly_createVnet,
   tenderly_sim,
   IPayloadsController_ABI,
+  TenderlySimulationResponse,
 } from "@aave-dao/toolbox";
 import { Address, encodeFunctionData, Hash, Hex } from "viem";
 import { providerConfig } from "./common";
 import { eventDb } from "@aave-dao/aave-helpers-js";
-import { renderTenderlyReport } from "./tenderly-tooling/tenderly-report";
+import {
+  PayloadsExecutedBefore,
+  renderTenderlyReport,
+} from "./tenderly-tooling/tenderly-report";
 import { getMdContractName } from "./tenderly-tooling/utils";
 import {
   getPayloadStorageOverrides,
@@ -54,6 +58,14 @@ type SimulateOnTenderlyParams = {
 
 const EOA = "0xD73a92Be73EfbFcF3854433A5FcbAbF9c1316073";
 
+function getTenderlyConfig() {
+  return {
+    projectSlug: process.env.TENDERLY_PROJECT_SLUG!,
+    accountSlug: process.env.TENDERLY_ACCOUNT!,
+    accessToken: process.env.TENDERLY_ACCESS_TOKEN!,
+  };
+}
+
 export async function simulateOnTenderly({
   chainId,
   executeBefore,
@@ -61,11 +73,6 @@ export async function simulateOnTenderly({
   payloadsController,
   cache,
 }: SimulateOnTenderlyParams) {
-  const tenderlyConfig = {
-    projectSlug: process.env.TENDERLY_PROJECT_SLUG!,
-    accountSlug: process.env.TENDERLY_ACCOUNT!,
-    accessToken: process.env.TENDERLY_ACCESS_TOKEN!,
-  };
   const executedLog = cache.logs.executedLog;
   const blockNumber = executedLog?.blockNumber
     ? Number(executedLog?.blockNumber)
@@ -80,7 +87,7 @@ export async function simulateOnTenderly({
         blockNumber: blockNumber === -2 ? "latest" : blockNumber,
         force: false,
       },
-      tenderlyConfig,
+      getTenderlyConfig(),
     );
     if (executedLog) {
       vnet.testClient.setNextBlockTimestamp({
@@ -88,6 +95,7 @@ export async function simulateOnTenderly({
       });
     }
     // first execute all previous payloads
+    const executedBefore: PayloadsExecutedBefore = { executed: [], failed: [] };
     for (const before of executeBefore) {
       console.log(`assuming execution of ${before}`);
       try {
@@ -104,8 +112,10 @@ export async function simulateOnTenderly({
           functionName: "executePayload",
           args: [before],
         });
+        executedBefore.executed.push(before);
       } catch (e) {
         console.error(`Failed to execute payload ${before}: ${e}`);
+        executedBefore.failed.push(before);
       }
     }
     // prepare the actual payload execution via state overrides
@@ -153,83 +163,117 @@ export async function simulateOnTenderly({
         etherscanApiKey: process.env.ETHERSCAN_API_KEY!,
       },
       eventCache: eventDb,
-      getContractName: (sim, address) => {
-        const references = getAddressBookReferences(
-          address,
-          Number(sim.simulation.network_id),
-        );
-        if (references.length > 0)
-          return flagAsKnown(
-            getMdContractName(sim.contracts, address),
-            references[0],
-          );
-        return getMdContractName(sim.contracts, address);
-      },
+      getContractName,
+      executedBefore,
     });
     await vnet.delete();
+    // a revert may come from the payloads executed before, so show how the payload behaves on its own too
+    if (
+      executedBefore.executed.length &&
+      simResult.simulation.status === false
+    ) {
+      const heading = "## Standalone simulation (no other payloads executed)";
+      try {
+        const standalone = await simulateViaEndpoint({
+          chainId,
+          payloadId,
+          payloadsController,
+          cache,
+          blockNumber,
+          heading,
+        });
+        report.report += `\n---\n\n${standalone.report}`;
+      } catch (e) {
+        console.error(`Standalone simulation of ${payloadId} failed: ${e}`);
+        report.report += `\n---\n\n${heading}\n\n:warning: standalone simulation could not be run\n`;
+      }
+    }
     return report;
   } catch (e) {
     console.log(e);
     console.log(
       "error simulating against a vnet, trying against the simulation endpoint",
     );
-    const overrides = await getPayloadStorageOverrides(
-      getClient(chainId, { providerConfig }),
-      payloadsController,
+    return simulateViaEndpoint({
+      chainId,
       payloadId,
-    );
-    const simPayload = {
-      network_id: chainId.toString(),
-      from: EOA,
-      to: payloadsController,
-      input: encodeFunctionData({
-        abi: IPayloadsController_ABI,
-        functionName: "executePayload",
-        args: [payloadId],
-      }),
-      block_number: blockNumber,
-      gas: UNCAPPED_GAS_LIMIT_CHAINS.includes(chainId) ? 0 : 16_000_000,
-      state_objects: {
-        [payloadsController]: {
-          storage: overrides.reduce(
-            (acc, val) => {
-              acc[val.slot] = val.value;
-              return acc;
-            },
-            {} as Record<Hex, Hex>,
-          ),
-        },
-      },
-      save: true,
-    } as const;
-    const simResult = await tenderly_sim(tenderlyConfig, simPayload);
-    const report = await renderTenderlyReport({
-      payload: cache.payload,
-      payloadId: payloadId,
-      onchainLogs: cache.logs as any,
-      sim: simResult,
-      client: getClient(chainId, {
-        providerConfig,
-      }),
-      config: {
-        etherscanApiKey: process.env.ETHERSCAN_API_KEY!,
-      },
-      eventCache: eventDb,
-      getContractName: (sim, address) => {
-        const references = getAddressBookReferences(
-          address,
-          Number(sim.simulation.network_id),
-        );
-        if (references.length)
-          return flagAsKnown(
-            getMdContractName(sim.contracts, address),
-            references[0],
-          );
-        return getMdContractName(sim.contracts, address);
-      },
+      payloadsController,
+      cache,
+      blockNumber,
     });
-    return report;
   }
+}
+
+async function simulateViaEndpoint({
+  chainId,
+  payloadId,
+  payloadsController,
+  cache,
+  blockNumber,
+  heading,
+}: Omit<SimulateOnTenderlyParams, "executeBefore"> & {
+  blockNumber: number;
+  heading?: string;
+}) {
+  const overrides = await getPayloadStorageOverrides(
+    getClient(chainId, { providerConfig }),
+    payloadsController,
+    payloadId,
+  );
+  const simPayload = {
+    network_id: chainId.toString(),
+    from: EOA,
+    to: payloadsController,
+    input: encodeFunctionData({
+      abi: IPayloadsController_ABI,
+      functionName: "executePayload",
+      args: [payloadId],
+    }),
+    block_number: blockNumber,
+    gas: UNCAPPED_GAS_LIMIT_CHAINS.includes(chainId) ? 0 : 16_000_000,
+    state_objects: {
+      [payloadsController]: {
+        storage: overrides.reduce(
+          (acc, val) => {
+            acc[val.slot] = val.value;
+            return acc;
+          },
+          {} as Record<Hex, Hex>,
+        ),
+      },
+    },
+    save: true,
+  } as const;
+  const simResult = await tenderly_sim(getTenderlyConfig(), simPayload);
+  const report = await renderTenderlyReport({
+    payload: cache.payload,
+    payloadId: payloadId,
+    onchainLogs: cache.logs as any,
+    sim: simResult,
+    client: getClient(chainId, {
+      providerConfig,
+    }),
+    config: {
+      etherscanApiKey: process.env.ETHERSCAN_API_KEY!,
+    },
+    eventCache: eventDb,
+    getContractName,
+    heading,
+  });
+  return report;
+}
+
+function getContractName(sim: TenderlySimulationResponse, address: Address) {
+  const references = getAddressBookReferences(
+    address,
+    Number(sim.simulation.network_id),
+  );
+  if (references.length)
+    return flagAsKnown(
+      getMdContractName(sim.contracts, address),
+      references[0],
+    );
+  return getMdContractName(sim.contracts, address);
 }
 
 function flagAsKnown(value: string, reference: string) {
