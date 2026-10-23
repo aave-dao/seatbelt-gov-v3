@@ -21,6 +21,6 @@
     "prettier": "3.5.3",
     "prettier-plugin-solidity": "1.4.3",
     "viem": "^2.45.1",
-    "vitest": "^3.2.4"
+    "vitest": "^4.0.18"
   }
 }
