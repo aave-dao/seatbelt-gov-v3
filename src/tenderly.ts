@@ -133,7 +133,7 @@ export async function simulateOnTenderly({
       save: true,
       source: "dashboard",
     };
-    const simResult = await vnet.simulate(simPayload);
+    const simResult = assertSimOk(await vnet.simulate(simPayload));
     // after simulation execute payload
     await vnet.walletClient.writeContract({
       chain: { id: chainId } as any,
@@ -202,7 +202,9 @@ export async function simulateOnTenderly({
       },
       save: true,
     } as const;
-    const simResult = await tenderly_sim(tenderlyConfig, simPayload);
+    const simResult = assertSimOk(
+      await tenderly_sim(tenderlyConfig, simPayload),
+    );
     const report = await renderTenderlyReport({
       payload: cache.payload,
       payloadId: payloadId,
@@ -230,6 +232,16 @@ export async function simulateOnTenderly({
     });
     return report;
   }
+}
+
+// Tenderly reports failures as an `error` body, which the report renderer would crash on
+function assertSimOk<T>(response: T): T {
+  const error = (response as { error?: { message?: string } }).error;
+  if (error)
+    throw new Error(
+      `Tenderly simulation failed: ${error.message ?? JSON.stringify(error)}`,
+    );
+  return response;
 }
 
 function flagAsKnown(value: string, reference: string) {
