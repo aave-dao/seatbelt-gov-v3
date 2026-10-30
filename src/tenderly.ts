@@ -77,7 +77,10 @@ export async function simulateOnTenderly({
         forkChainId: chainId,
         displayName: `Seatbelt ${chainId} ${payloadId}`,
         slug: `seatbelt-${chainId}-${payloadId}-${Date.now().toString(36)}`,
-        blockNumber: blockNumber === -2 ? "latest" : blockNumber,
+        // the tenderly api accepts "latest" or a block number, the toolbox typing only a hex string
+        blockNumber: (blockNumber === -2
+          ? "latest"
+          : blockNumber) as unknown as Hex,
         force: false,
       },
       tenderlyConfig,
