@@ -322,7 +322,7 @@ const IMPLEMENTATION_SLOT =
  * Returns tenderly's contract list completed with explorer names, EOAs and contracts
  * deployed during the simulation, with eip1967 implementations read from storage.
  */
-async function getNamedContracts(
+export async function getNamedContracts(
   client: Client,
   sim: TenderlySimulationResponse,
   verified: Awaited<ReturnType<typeof getVerificationStatus>>,

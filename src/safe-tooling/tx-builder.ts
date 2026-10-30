@@ -66,9 +66,9 @@ const MULTI_SEND_ABI = [
  * literals first so values above Number.MAX_SAFE_INTEGER keep full precision.
  */
 function parseJsonValue(value: string): unknown {
-  const quoted = value.replace(
-    /-?\d+(?=(?:[^"]*"[^"]*")*[^"]*$)/g,
-    (match) => `"${match}"`,
+  // string literals (incl. escaped quotes) are matched first and kept as is
+  const quoted = value.replace(/"(?:[^"\\]|\\.)*"|-?\d+/g, (match) =>
+    match.startsWith('"') ? match : `"${match}"`,
   );
   return JSON.parse(quoted);
 }
@@ -117,11 +117,13 @@ function parseInputValue(param: AbiParameter, value: unknown): unknown {
  * Returns the calldata of a single tx-builder transaction.
  */
 export function encodeTxBuilderTransaction(tx: TxBuilderTransaction): Hex {
-  if (tx.data) return tx.data;
-  if (!tx.contractMethod)
-    throw new Error(
-      `transaction to ${tx.to} has neither data nor contractMethod`,
-    );
+  if (!tx.contractMethod) {
+    if (!tx.data)
+      throw new Error(
+        `transaction to ${tx.to} has neither data nor contractMethod`,
+      );
+    return tx.data;
+  }
   const abiFunction: AbiFunction = {
     type: "function",
     name: tx.contractMethod.name,
@@ -132,7 +134,13 @@ export function encodeTxBuilderTransaction(tx: TxBuilderTransaction): Hex {
   const args = tx.contractMethod.inputs.map((input) =>
     parseInputValue(input, tx.contractInputsValues?.[input.name!]),
   );
-  return encodeFunctionData({ abi: [abiFunction], args });
+  const data = encodeFunctionData({ abi: [abiFunction], args });
+  // the report renders contractMethod and its values, so raw data must encode the same call
+  if (tx.data && tx.data.toLowerCase() !== data.toLowerCase())
+    throw new Error(
+      `data of transaction to ${tx.to} does not match its contractMethod and contractInputsValues`,
+    );
+  return data;
 }
 
 /**

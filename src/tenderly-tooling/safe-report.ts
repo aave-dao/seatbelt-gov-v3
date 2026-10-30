@@ -10,6 +10,17 @@ import {
   getTxBuilderTransactionSignature,
 } from "../safe-tooling/tx-builder";
 
+/**
+ * Makes batch-supplied text inert in the markdown report: one line, no html, no code spans.
+ */
+export function sanitizeMarkdown(value: string): string {
+  return value
+    .replace(/\s+/g, " ")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/`/g, "'");
+}
+
 type RenderSafeTenderlyReportParams = RenderTenderlySimulationBodyParams & {
   batch: TxBuilderBatch;
   safe: {
@@ -33,15 +44,15 @@ export async function renderSafeTenderlyReport({
   config,
   getContractName,
 }: RenderSafeTenderlyReportParams) {
-  let report = `## Safe transaction batch "${batch.meta.name}" on ${client.chain!.name}
+  let report = `## Safe transaction batch "${sanitizeMarkdown(batch.meta.name)}" on ${client.chain!.name}
 
 - safe: [${safe.address}](${toAddressLink(safe.address, client)}) (version: ${safe.version}, threshold: ${safe.threshold}/${safe.owners.length})
 - safeTxHash: ${safe.safeTxHash} (at nonce ${safe.nonce}${multiSendCallOnly ? `, batched via MultiSendCallOnly ${multiSendCallOnly}` : ""})
-${batch.meta.description ? `- description: ${batch.meta.description}\n` : ""}${batch.meta.checksum ? `- tx-builder checksum: ${batch.meta.checksum}\n` : ""}- transactions:
+${batch.meta.description ? `- description: ${sanitizeMarkdown(batch.meta.description)}\n` : ""}${batch.meta.checksum ? `- tx-builder checksum: ${sanitizeMarkdown(batch.meta.checksum)}\n` : ""}- transactions:
 ${batch.transactions
   .map(
     (tx) =>
-      `  - [${tx.to}](${toAddressLink(tx.to, client)}), value: ${tx.value}, signature: ${getTxBuilderTransactionSignature(tx)}, ${tx.contractInputsValues ? `args: ${JSON.stringify(tx.contractInputsValues)}, ` : ""}callData: ${encodeTxBuilderTransaction(tx)}`,
+      `  - [${tx.to}](${toAddressLink(tx.to, client)}), value: ${sanitizeMarkdown(tx.value)}, signature: ${sanitizeMarkdown(getTxBuilderTransactionSignature(tx))}, ${tx.contractMethod && tx.contractInputsValues ? `args: ${sanitizeMarkdown(JSON.stringify(tx.contractInputsValues))}, ` : ""}callData: ${encodeTxBuilderTransaction(tx)}`,
   )
   .join("\n")}
 `;
