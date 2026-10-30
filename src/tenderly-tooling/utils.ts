@@ -19,6 +19,22 @@ export type AssetInfo = { symbol: string; decimals: number };
 export const fmtGas = (g: bigint) => g.toLocaleString("en-US");
 
 /**
+ * Gas the executePayload tx actually executes: intrinsic + call trace.
+ * `transaction.gas_used` is the charged gas, which Tenderly derives from the gas limit
+ * on chains billing by limit (Avalanche: limit / 2, Monad: full limit), so it is not used.
+ * Returns undefined when the trace is missing.
+ */
+export function getExecutionGas(sim: TenderlySimulationResponse) {
+  const info = sim.transaction.transaction_info as {
+    intrinsic_gas?: number;
+    call_trace?: { gas_used?: number };
+  };
+  if (info?.intrinsic_gas == null || info.call_trace?.gas_used == null)
+    return undefined;
+  return BigInt(info.intrinsic_gas) + BigInt(info.call_trace.gas_used);
+}
+
+/**
  * Resolves a network's max per-transaction gas limit — the cap a single tx may
  * consume; a payload exceeding it can never be included on-chain.
  *
