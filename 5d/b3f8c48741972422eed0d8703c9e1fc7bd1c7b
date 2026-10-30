@@ -1,0 +1,30 @@
+src/tenderly-tooling/safe-report.spec.ts
+  s_2bc10e7d26489f::t_dd49bd280e0261 1-10
+src/tenderly-tooling/tenderly-report.spec.ts
+  s_2bc10e7d26489f::t_be7c8cd6f49efb 1-95
+  s_2bc10e7d26489f::t_905d38b9cf20a2 96-100
+src/safe-tooling/tx-builder.spec.ts
+  s_2bc10e7d26489f::t_c02641fef6dd33 55-132,149,154-160
+src/safe-tooling/tx-builder.ts
+  s_2bc10e7d26489f::t_c91de8406e9020 69-71,120-126,137-143
+src/tenderly-tooling/safe-report.ts
+  s_2bc10e7d26489f::t_6b6af25e3c58ec 13-23,47,51,55
+src/tenderly-tooling/tenderly-report.ts
+  s_2bc10e7d26489f::t_6a3767b50798ff 325
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "5db3f8c48741972422eed0d8703c9e1fc7bd1c7b",
+  "prompts": {},
+  "sessions": {
+    "s_2bc10e7d26489f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "c17fbce8-c529-4890-a816-221a667180e8",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Alexandru Niculae <43644109+avniculae@users.noreply.github.com>"
+    }
+  }
+}
