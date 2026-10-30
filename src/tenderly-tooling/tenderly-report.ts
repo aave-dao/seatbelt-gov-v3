@@ -1,4 +1,14 @@
-import { AbiEvent, Address, Client, Hash, Hex, zeroAddress } from "viem";
+import {
+  AbiEvent,
+  Address,
+  Client,
+  Hash,
+  Hex,
+  getAddress,
+  sliceHex,
+  zeroAddress,
+} from "viem";
+import { getStorageAt } from "viem/actions";
 import { getV4Addresses } from "../v4/targets";
 import { enhanceLogs, parseLogs } from "./logs";
 import {
@@ -193,6 +203,13 @@ export async function renderTenderlySimulationBody({
     apiKey: config.etherscanApiKey,
   });
 
+  // tenderly has no metadata for contracts created in the simulation, and its proxy
+  // implementations can be stale, so names are resolved against a completed contract list
+  const nameSim: TenderlySimulationResponse = {
+    ...sim,
+    contracts: await getNamedContracts(client, sim, verified),
+  };
+
   const stateDiff = await enhanceStateDiff(
     client,
     transformTenderlyStateDiff(sim.transaction.transaction_info.state_diff),
@@ -238,13 +255,13 @@ export async function renderTenderlySimulationBody({
   }
 
   report += renderMarkdownStateDiffReport(v3StateDiff, (address) =>
-    getContractName(sim, address),
+    getContractName(nameSim, address),
   );
 
   if (Object.keys(v4StateDiff).length > 0) {
     report += `\n\n## Aave V4 changes\n\n`;
     report += renderMarkdownStateDiffReport(v4StateDiff, (address) =>
-      getContractName(sim, address),
+      getContractName(nameSim, address),
     );
   }
 
@@ -256,7 +273,7 @@ export async function renderTenderlySimulationBody({
     verified
       .sort((a, b) => a.address.localeCompare(b.address))
       .map((contract) => {
-        report += `| ${getContractName(sim, contract.address)} | ${verificationStatusToString(contract.status)} |\n`;
+        report += `| ${getContractName(nameSim, contract.address)} | ${verificationStatusToString(contract.status)} |\n`;
       });
     report += "\n";
   }
@@ -268,7 +285,7 @@ export async function renderTenderlySimulationBody({
     selfDestruct
       .sort((a, b) => a.address.localeCompare(b.address))
       .map((selfDestruct) => {
-        report += `| ${getContractName(sim, selfDestruct.address)} | ${selfDestructStatusToString(
+        report += `| ${getContractName(nameSim, selfDestruct.address)} | ${selfDestructStatusToString(
           selfDestruct.state,
         )} |\n`;
       });
@@ -282,7 +299,7 @@ export async function renderTenderlySimulationBody({
       .sort((a, b) => a.address.localeCompare(b.address))
       .map((log) => {
         if (log.address !== ctr) {
-          report += `- ${getContractName(sim, log.address)}\n`;
+          report += `- ${getContractName(nameSim, log.address)}\n`;
           ctr = log.address;
         }
         report += `  - \`${log.eventName || log.topics}(${
@@ -296,6 +313,79 @@ export async function renderTenderlySimulationBody({
   }
 
   return { report, eventCache };
+}
+
+const IMPLEMENTATION_SLOT =
+  "0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc";
+
+/**
+ * Returns tenderly's contract list completed with explorer names, EOAs and contracts
+ * deployed during the simulation, with eip1967 implementations read from storage.
+ */
+async function getNamedContracts(
+  client: Client,
+  sim: TenderlySimulationResponse,
+  verified: Awaited<ReturnType<typeof getVerificationStatus>>,
+) {
+  const contracts = sim.contracts.map((contract) => ({ ...contract }));
+  const known = new Set(contracts.map((c) => c.address.toLowerCase()));
+  for (const { address, status, name } of verified) {
+    if (known.has(address.toLowerCase())) continue;
+    const contractName =
+      status === VerificationStatus.EOA
+        ? "EOA"
+        : status === VerificationStatus.DEPLOYED_ON_EXECUTION
+          ? "contract deployed on execution"
+          : name;
+    if (!contractName) continue;
+    contracts.push({
+      address,
+      contract_name: contractName,
+    } as (typeof contracts)[number]);
+  }
+
+  // implementations set during the simulation take precedence over the pre-execution state
+  const writtenImplementations = new Map<string, Address>();
+  for (const diff of sim.transaction.transaction_info.state_diff ?? []) {
+    for (const write of diff.raw ?? []) {
+      if (write.key.toLowerCase() === IMPLEMENTATION_SLOT)
+        writtenImplementations.set(
+          write.address.toLowerCase(),
+          getAddress(sliceHex(write.dirty as Hex, 12)),
+        );
+    }
+  }
+  await Promise.all(
+    contracts.map(async (contract) => {
+      const address = contract.address.toLowerCase();
+      if (
+        !contract.standards?.includes("eip1967") &&
+        !writtenImplementations.has(address)
+      )
+        return;
+      let implementation = writtenImplementations.get(address);
+      if (!implementation) {
+        const slot = await getStorageAt(client, {
+          address: contract.address,
+          slot: IMPLEMENTATION_SLOT,
+        });
+        if (!slot) return;
+        implementation = getAddress(sliceHex(slot, 12));
+      }
+      if (implementation === zeroAddress) return;
+      contract.standards = [
+        ...new Set([...(contract.standards ?? []), "eip1967"]),
+      ];
+      contract.child_contracts = [
+        {
+          id: `eth:${sim.simulation.network_id}:${implementation.toLowerCase()}`,
+          address: implementation,
+          network_id: sim.simulation.network_id,
+        },
+      ];
+    }),
+  );
+  return contracts;
 }
 
 function getContractsDeployedDuringSimulation(

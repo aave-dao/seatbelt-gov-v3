@@ -41,9 +41,7 @@ ${batch.meta.description ? `- description: ${batch.meta.description}\n` : ""}${b
 ${batch.transactions
   .map(
     (tx) =>
-      `  - [${tx.to}](${toAddressLink(tx.to, client)}), value: ${tx.value}, signature: ${getTxBuilderTransactionSignature(tx)}, args: ${JSON.stringify(
-        tx.contractInputsValues,
-      )}, callData: ${encodeTxBuilderTransaction(tx)}`,
+      `  - [${tx.to}](${toAddressLink(tx.to, client)}), value: ${tx.value}, signature: ${getTxBuilderTransactionSignature(tx)}, ${tx.contractInputsValues ? `args: ${JSON.stringify(tx.contractInputsValues)}, ` : ""}callData: ${encodeTxBuilderTransaction(tx)}`,
   )
   .join("\n")}
 `;
