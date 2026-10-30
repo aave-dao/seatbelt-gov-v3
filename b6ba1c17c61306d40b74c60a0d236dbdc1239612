@@ -1,0 +1,33 @@
+bun.lock
+  s_a3985ea6bcb782::t_a55e4a68e24937 8-9,21,23
+package.json
+  s_a3985ea6bcb782::t_d1f618f4b7d46a 16-17
+reports/payloads/1/0xdAbad81aF85554E9ae636395611C58F7eC1aAEc5/471.md
+  s_a3985ea6bcb782::t_8411c1c9039a41 24,28,31,123-124,128,131-207,214,227,237-238,240-241
+reports/payloads/43114/0x1140CB7CAfAcC745771C2Ea31e7B5C653c5d0B80/125.md
+  s_a3985ea6bcb782::t_992a150b8547f9 15-16,20,31,116,120,147-223,234,247,255,258,261-262
+reports/payloads/8453/0x2DC219E716793fb4b21548C0f009Ba3Af753ab01/117.md
+  s_a3985ea6bcb782::t_69b741b4879731 15-16,20,31,43-66,74,86,97,100
+reports/payloads/8453/0x2DC219E716793fb4b21548C0f009Ba3Af753ab01/118.md
+  s_a3985ea6bcb782::t_c24170aa4d9adb 15-16,20,23,42-46,50,52,54-56,58-62,66,70-71,74,76,79-111,116,119,121,130,133,135,145-146
+src/tenderly-tooling/decoded-storage.ts
+  s_a3985ea6bcb782::t_6178af9b721d1b 1-74
+src/tenderly-tooling/tenderly-report.ts
+  s_a3985ea6bcb782::t_eed75524cb23b3 4,230-238
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "b6ba1c17c61306d40b74c60a0d236dbdc1239612",
+  "prompts": {},
+  "sessions": {
+    "s_a3985ea6bcb782": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "e2dfebd4-b7e0-4fd7-94b1-452b01110e6d",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "DhairyaSethi <55102840+DhairyaSethi@users.noreply.github.com>"
+    }
+  }
+}

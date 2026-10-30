@@ -1,0 +1,22 @@
+reports/payloads/196/0x80e11cB895a23C901a990239E5534054C66476B5/10.md
+  s_ba6e068993621c::t_eedf89aa1c1566 25-327
+  s_ba6e068993621c::t_89e51802df26a2 1-24,328-331
+cache/196/0x80e11cB895a23C901a990239E5534054C66476B5/10.json
+  s_ba6e068993621c::t_068d9c71aafa0b 1
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "d939fd52329e375f9342c861d6466ff692ae0968",
+  "prompts": {},
+  "sessions": {
+    "s_ba6e068993621c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b22efe11-2e23-4b49-bfb2-1494a3d75a84",
+        "model": "claude-fable-5"
+      },
+      "human_author": "DhairyaSethi <55102840+DhairyaSethi@users.noreply.github.com>"
+    }
+  }
+}

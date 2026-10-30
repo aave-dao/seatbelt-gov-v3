@@ -1,0 +1,23 @@
+cache/43114/0x1140CB7CAfAcC745771C2Ea31e7B5C653c5d0B80/128.json
+  s_ad44f2766ae659::t_5214537feeb83f 1
+src/strategy.ts
+  s_ad44f2766ae659::t_f5ab47be7c5167 13-21,88-93,108-112
+reports/payloads/43114/0x1140CB7CAfAcC745771C2Ea31e7B5C653c5d0B80/128.md
+  s_ad44f2766ae659::t_5214537feeb83f 9,11-558
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "9cf8aa7270e92fa1b0fa5463e7a37a4f60eef8dd",
+  "prompts": {},
+  "sessions": {
+    "s_ad44f2766ae659": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3f6e3421-9007-4063-99df-19c6c3230880",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "DhairyaSethi <55102840+DhairyaSethi@users.noreply.github.com>"
+    }
+  }
+}

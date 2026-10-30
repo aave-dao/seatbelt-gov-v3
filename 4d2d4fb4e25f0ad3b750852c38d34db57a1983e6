@@ -1,0 +1,28 @@
+.github/workflows/cron.yaml
+  s_c102b81460c49f::t_f4c8c89296886c 66,171
+src/tenderly.ts
+  s_c102b81460c49f::t_d3ff93200b4bc1 239
+  s_c102b81460c49f::t_93ceffe1450122 136,205-207,237-238,240-244
+  s_c102b81460c49f::t_e40db646b8b7f6 245-246
+src/index.ts
+  s_c102b81460c49f::t_93ceffe1450122 27-29,91-93,120-122,210-213
+  s_c102b81460c49f::t_b251024bb680fa 214
+.github/workflows/trigger.yaml
+  s_c102b81460c49f::t_b66eb1ed631ca8 84
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "4d2d4fb4e25f0ad3b750852c38d34db57a1983e6",
+  "prompts": {},
+  "sessions": {
+    "s_c102b81460c49f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "d8eef528-acea-4861-aa79-0f7742ca4f2e",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "DhairyaSethi <55102840+DhairyaSethi@users.noreply.github.com>"
+    }
+  }
+}

@@ -1,0 +1,23 @@
+bun.lock
+  s_b3728f09f98d66::t_0d0db3deee7231 9,23
+package.json
+  s_b3728f09f98d66::t_9f8b95e108bc2a 17
+reports/payloads/9745/0xe76EB348E65eF163d85ce282125FF5a7F5712A1d/38.md
+  s_b3728f09f98d66::t_7fb4ee23ab24fa 1-271
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "38b06f98cf918355e9b5cfd0c0bde3518e936b7f",
+  "prompts": {},
+  "sessions": {
+    "s_b3728f09f98d66": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "6a08eca6-f321-4261-9c45-5e91162df330",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "DhairyaSethi <55102840+DhairyaSethi@users.noreply.github.com>"
+    }
+  }
+}
