@@ -28,9 +28,10 @@ describe("seatbelt", () => {
   it("should decode known logs", () => {
     const logs = parseLogs({
       eventDb: abi,
-      logs:
-        MOCK_SIMULATION.transaction.transaction_info.logs.map((l) => l.raw) ||
-        [],
+      // the mock is a readonly literal, narrower than the tenderly response types
+      logs: MOCK_SIMULATION.transaction.transaction_info.logs.map(
+        (l) => l.raw,
+      ) as unknown as Parameters<typeof parseLogs>[0]["logs"],
     });
     expect(logs).toMatchInlineSnapshot(`
       [
