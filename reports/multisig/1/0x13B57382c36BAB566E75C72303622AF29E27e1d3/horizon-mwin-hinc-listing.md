@@ -1,11 +1,15 @@
-## Safe transaction batch "Horizon mWIN & HINC listing" on Ethereum
+## Safe transaction batch "Transactions Batch" on Ethereum
 
 - safe: [0x13B57382c36BAB566E75C72303622AF29E27e1d3](https://etherscan.io/address/0x13B57382c36BAB566E75C72303622AF29E27e1d3) (version: 1.4.1, threshold: 4/6)
-- safeTxHash: 0xbf755874a4c61a329062aa833b9441fb2313131eadfce0d9e474b7eda0d1a5d0 (at nonce 15)
+- safeTxHash: 0x1f04ce74cc2e4f3445275627c0d90ce000693573c6111568f18ba902c4473a40 (at nonce 15, batched via MultiSendCallOnly 0x9641d764fc13c8B624c04430C7356C1C7C8102e2)
+- description: Execute the mWIN & HINC listing payload, then grant per-aToken AUTHORIZED_TRANSFER roles on the Horizon RwaATokenManager (Midas: aMWIN, Securitize: aHINC)
+- tx-builder checksum: 0x1d5114bde0b0ef7ca3913525d0438a7b6dd71ab1cd4be31aaf6d77cf6aa3e820
 - transactions:
-  - [0x09e8E1408a68778CEDdC1938729Ea126710E7Dda](https://etherscan.io/address/0x09e8E1408a68778CEDdC1938729Ea126710E7Dda), value: 0, signature: raw calldata, callData: 0x025d36a9000000000000000000000000b45f91eb35e806408597adce4153ce06a18b839d000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000a000000000000000000000000000000000000000000000000000000000000000e00000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000965786563757465282900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-- simulatedExecutionAt: 30/10/2026, 07:18:46, timestamp: 1793344726, block: 26304030
-- gasUsed: 3,982,784 (max tx gas limit: 16,777,216)
+  - [0x09e8E1408a68778CEDdC1938729Ea126710E7Dda](https://etherscan.io/address/0x09e8E1408a68778CEDdC1938729Ea126710E7Dda), value: 0, signature: executeTransaction(address,uint256,string,bytes,bool), args: {"target":"0xB45F91eb35e806408597AdCe4153ce06A18B839d","value":"0","signature":"execute()","data":"0x","withDelegatecall":"true"}, callData: 0x025d36a9000000000000000000000000b45f91eb35e806408597adce4153ce06a18b839d000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000a000000000000000000000000000000000000000000000000000000000000000e00000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000965786563757465282900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+  - [0x803e5Db3E26e88AD0a682A46c3E04cdd053D0EB9](https://etherscan.io/address/0x803e5Db3E26e88AD0a682A46c3E04cdd053D0EB9), value: 0, signature: grantAuthorizedTransferRole(address,address), args: {"aToken":"0x6d094e48Ee2E7C43787aFa0ec5aCcC5F644F976C","account":"0x8003544D32eE074aA8A1fb72129Fa8Ef7fe02E5f"}, callData: 0xb2761e350000000000000000000000006d094e48ee2e7c43787afa0ec5accc5f644f976c0000000000000000000000008003544d32ee074aa8a1fb72129fa8ef7fe02e5f
+  - [0x803e5Db3E26e88AD0a682A46c3E04cdd053D0EB9](https://etherscan.io/address/0x803e5Db3E26e88AD0a682A46c3E04cdd053D0EB9), value: 0, signature: grantAuthorizedTransferRole(address,address), args: {"aToken":"0x30a62C38265B9Df787d22E62e52C541051B4bCdF","account":"0x59c1eAcEc450c57Dcb9b8725d0F96635C2b676Ee"}, callData: 0xb2761e3500000000000000000000000030a62c38265b9df787d22e62e52c541051b4bcdf00000000000000000000000059c1eacec450c57dcb9b8725d0f96635c2b676ee
+- simulatedExecutionAt: 10/11/2026, 09:31:57, timestamp: 1794303117, block: 26383632
+- gasUsed: 4,051,387 (max tx gas limit: 16,777,216)
 
 #### SafeProxy at `0x13B57382c36BAB566E75C72303622AF29E27e1d3`
 
@@ -127,6 +131,18 @@
 + "\"0x0000000000000000000000005148d810b1dae509d68f9d9219ad1d004ea32545\""
 
 ```
+#### RwaATokenManager at `0x803e5Db3E26e88AD0a682A46c3E04cdd053D0EB9`
+
+```diff
+@@ `_roles` mapping (bytes32 => tuple) key `0x274135d623bbeca652d25e067e98e248123211a4c378cf0aa71e04c5ceffc45a`.members.0x59c1eacec450c57dcb9b8725d0f96635c2b676ee @@
+- false
++ true
+
+@@ `_roles` mapping (bytes32 => tuple) key `0xa7ce40c0f7beaa4c52199b120bb744cd445e5251175c9e38dffa6d9770290dfc`.members.0x8003544d32ee074aa8a1fb72129fa8ef7fe02e5f @@
+- false
++ true
+
+```
 #### DefaultReserveInterestRateStrategyV2 at `0x87593272C06f4FC49EC2942eBda0972d2F1Ab521` [:ghost:](https://github.com/aave-dao/aave-address-book  "AaveV3EthereumHorizon.ASSETS.GHO.INTEREST_RATE_STRATEGY")
 
 ```diff
@@ -144,11 +160,11 @@
 ```diff
 @@ `assetsSources` mapping (address => address) key `0x015c477a4e2881c4b3bb8999f59ee4a04e812344` @@
 - "0x0000000000000000000000000000000000000000"
-+ "0x6b447a72d8243e96f5782ad6bdffd2dc813bb82e (latestAnswer: 980.4347 [98043475373, 8 decimals], description: HINC NAV - AAVE LlamaGuard)"
++ "0x6b447a72d8243e96f5782ad6bdffd2dc813bb82e (latestAnswer: 982.7115 [98271156500, 8 decimals], description: HINC NAV - AAVE LlamaGuard)"
 
 @@ `assetsSources` mapping (address => address) key `0x4e72025984424e52838cf8953e2863eff036b67a` @@
 - "0x0000000000000000000000000000000000000000"
-+ "0x31e18898399a419aa20a18ec8fc49cc39b77cde8 (latestAnswer: 131,740.1316 [13174013169068, 8 decimals], description: MWIN NAV - Aave Llamaguard)"
++ "0x31e18898399a419aa20a18ec8fc49cc39b77cde8 (latestAnswer: 131,890.6538 [13189065385852, 8 decimals], description: MWIN NAV - Aave Llamaguard)"
 
 ```
 #### InitializableImmutableAdminUpgradeabilityProxy at `0xAe05Cd22df81871bc7cC2a04BeCfb516bFe332C8` with implementation PoolInstance at `0xcD8B9aC3B72E81fD8A0c9a0dBba583597E48A23a` [:ghost:](https://github.com/aave-dao/aave-address-book  "AaveV3EthereumHorizon.POOL")
@@ -406,9 +422,11 @@
 | PoolAddressesProvider at `0x5D39E06b825C1F2B80bf2756a73e28eFAA128ba0` [:ghost:](https://github.com/aave-dao/aave-address-book  "AaveV3EthereumHorizon.POOL_ADDRESSES_PROVIDER") | Contract |
 | EACAggregatorProxy at `0x6b447A72D8243E96F5782ad6BdffD2dc813bb82E` | Contract |
 | contract deployed on execution at `0x6d094e48Ee2E7C43787aFa0ec5aCcC5F644F976C` with implementation RwaATokenInstance at `0x5148d810B1DaE509d68f9d9219AD1d004EA32545` | Deployed on execution |
+| RwaATokenManager at `0x803e5Db3E26e88AD0a682A46c3E04cdd053D0EB9` | Contract |
 | InitializableImmutableAdminUpgradeabilityProxy at `0x83Cb1B4af26EEf6463aC20AFbAC9c0e2E017202F` with implementation PoolConfiguratorInstance at `0x898E245D83Ad255Dc57b04978D0b4A12b94a557F` [:ghost:](https://github.com/aave-dao/aave-address-book  "AaveV3EthereumHorizon.POOL_CONFIGURATOR") | Contract |
 | DefaultReserveInterestRateStrategyV2 at `0x87593272C06f4FC49EC2942eBda0972d2F1Ab521` [:ghost:](https://github.com/aave-dao/aave-address-book  "AaveV3EthereumHorizon.ASSETS.GHO.INTEREST_RATE_STRATEGY") | Contract |
 | PoolConfiguratorInstance at `0x898E245D83Ad255Dc57b04978D0b4A12b94a557F` [:ghost:](https://github.com/aave-dao/aave-address-book  "AaveV3EthereumHorizon.POOL_CONFIGURATOR_IMPL") | Contract |
+| MultiSendCallOnly at `0x9641d764fc13c8B624c04430C7356C1C7C8102e2` | Contract |
 | AaveOracle at `0x985BcfAB7e0f4EF2606CC5b64FC1A16311880442` [:ghost:](https://github.com/aave-dao/aave-address-book  "AaveV3EthereumHorizon.ORACLE") | Contract |
 | InitializableImmutableAdminUpgradeabilityProxy at `0xAe05Cd22df81871bc7cC2a04BeCfb516bFe332C8` with implementation PoolInstance at `0xcD8B9aC3B72E81fD8A0c9a0dBba583597E48A23a` [:ghost:](https://github.com/aave-dao/aave-address-book  "AaveV3EthereumHorizon.POOL") | Contract |
 | AaveV3Horizon_mWINHINCListing_20261023 at `0xB45F91eb35e806408597AdCe4153ce06A18B839d` | Contract |
@@ -448,9 +466,11 @@
 | PoolAddressesProvider at `0x5D39E06b825C1F2B80bf2756a73e28eFAA128ba0` [:ghost:](https://github.com/aave-dao/aave-address-book  "AaveV3EthereumHorizon.POOL_ADDRESSES_PROVIDER") | DelegateCall |
 | EACAggregatorProxy at `0x6b447A72D8243E96F5782ad6BdffD2dc813bb82E` | Safe |
 | contract deployed on execution at `0x6d094e48Ee2E7C43787aFa0ec5aCcC5F644F976C` with implementation RwaATokenInstance at `0x5148d810B1DaE509d68f9d9219AD1d004EA32545` | Empty |
+| RwaATokenManager at `0x803e5Db3E26e88AD0a682A46c3E04cdd053D0EB9` | Safe |
 | InitializableImmutableAdminUpgradeabilityProxy at `0x83Cb1B4af26EEf6463aC20AFbAC9c0e2E017202F` with implementation PoolConfiguratorInstance at `0x898E245D83Ad255Dc57b04978D0b4A12b94a557F` [:ghost:](https://github.com/aave-dao/aave-address-book  "AaveV3EthereumHorizon.POOL_CONFIGURATOR") | DelegateCall |
 | DefaultReserveInterestRateStrategyV2 at `0x87593272C06f4FC49EC2942eBda0972d2F1Ab521` [:ghost:](https://github.com/aave-dao/aave-address-book  "AaveV3EthereumHorizon.ASSETS.GHO.INTEREST_RATE_STRATEGY") | Safe |
 | PoolConfiguratorInstance at `0x898E245D83Ad255Dc57b04978D0b4A12b94a557F` [:ghost:](https://github.com/aave-dao/aave-address-book  "AaveV3EthereumHorizon.POOL_CONFIGURATOR_IMPL") | DelegateCall |
+| MultiSendCallOnly at `0x9641d764fc13c8B624c04430C7356C1C7C8102e2` | Safe |
 | AaveOracle at `0x985BcfAB7e0f4EF2606CC5b64FC1A16311880442` [:ghost:](https://github.com/aave-dao/aave-address-book  "AaveV3EthereumHorizon.ORACLE") | Safe |
 | InitializableImmutableAdminUpgradeabilityProxy at `0xAe05Cd22df81871bc7cC2a04BeCfb516bFe332C8` with implementation PoolInstance at `0xcD8B9aC3B72E81fD8A0c9a0dBba583597E48A23a` [:ghost:](https://github.com/aave-dao/aave-address-book  "AaveV3EthereumHorizon.POOL") | DelegateCall |
 | AaveV3Horizon_mWINHINCListing_20261023 at `0xB45F91eb35e806408597AdCe4153ce06A18B839d` | DelegateCall |
@@ -470,15 +490,18 @@
 ### Events emitted from the proposal
 
 - Executor at `0x09e8E1408a68778CEDdC1938729Ea126710E7Dda`
-  - `ExecutedAction({"target":"0xB45F91eb35e806408597AdCe4153ce06A18B839d","value":"0","signature":"execute()","data":"0x","executionTime":"1793344726","withDelegatecall":true,"resultData":"0x"})`
+  - `ExecutedAction({"target":"0xB45F91eb35e806408597AdCe4153ce06A18B839d","value":"0","signature":"execute()","data":"0x","executionTime":"1794303117","withDelegatecall":true,"resultData":"0x"})`
 - SafeProxy at `0x13B57382c36BAB566E75C72303622AF29E27e1d3`
-  - `ExecutionSuccess({"txHash":"0xbf755874a4c61a329062aa833b9441fb2313131eadfce0d9e474b7eda0d1a5d0","payment":"0"})`
+  - `ExecutionSuccess({"txHash":"0x1f04ce74cc2e4f3445275627c0d90ce000693573c6111568f18ba902c4473a40","payment":"0"})`
 - contract deployed on execution at `0x234FaE51A7faF60E19f130A1bb000e3145Bc8bEF` with implementation VariableDebtTokenInstance at `0x15F03E5dE87c12cb2e2b8e5d6ECEf0a9E21ab269`
   - `Initialized({"underlyingAsset":"0x4E72025984424E52838cf8953E2863eFf036B67A","pool":"0xAe05Cd22df81871bc7cC2a04BeCfb516bFe332C8","incentivesController":"0x1D5D386a90CEA8AcEa9fa75389e97CF5F1AE21D3","debtTokenDecimals":18,"debtTokenName":"Aave Horizon RWA Variable Debt mWIN","debtTokenSymbol":"variableDebtHorRwamWIN","params":"0x"})`
 - contract deployed on execution at `0x30a62C38265B9Df787d22E62e52C541051B4bCdF` with implementation RwaATokenInstance at `0x5148d810B1DaE509d68f9d9219AD1d004EA32545`
   - `Initialized({"underlyingAsset":"0x015C477A4E2881C4B3bB8999f59ee4A04e812344","pool":"0xAe05Cd22df81871bc7cC2a04BeCfb516bFe332C8","treasury":"0x464C71f6c2F760DdA6093dCB91C24c39e5d6e18c","incentivesController":"0x1D5D386a90CEA8AcEa9fa75389e97CF5F1AE21D3","aTokenDecimals":6,"aTokenName":"Aave Horizon RWA HINC","aTokenSymbol":"aHorRwaHINC","params":"0x"})`
 - contract deployed on execution at `0x6d094e48Ee2E7C43787aFa0ec5aCcC5F644F976C` with implementation RwaATokenInstance at `0x5148d810B1DaE509d68f9d9219AD1d004EA32545`
   - `Initialized({"underlyingAsset":"0x4E72025984424E52838cf8953E2863eFf036B67A","pool":"0xAe05Cd22df81871bc7cC2a04BeCfb516bFe332C8","treasury":"0x464C71f6c2F760DdA6093dCB91C24c39e5d6e18c","incentivesController":"0x1D5D386a90CEA8AcEa9fa75389e97CF5F1AE21D3","aTokenDecimals":18,"aTokenName":"Aave Horizon RWA mWIN","aTokenSymbol":"aHorRwamWIN","params":"0x"})`
+- RwaATokenManager at `0x803e5Db3E26e88AD0a682A46c3E04cdd053D0EB9`
+  - `RoleGranted({"role":"0xa7ce40c0f7beaa4c52199b120bb744cd445e5251175c9e38dffa6d9770290dfc","account":"0x8003544D32eE074aA8A1fb72129Fa8Ef7fe02E5f","sender":"0x13B57382c36BAB566E75C72303622AF29E27e1d3"})`
+  - `RoleGranted({"role":"0x274135d623bbeca652d25e067e98e248123211a4c378cf0aa71e04c5ceffc45a","account":"0x59c1eAcEc450c57Dcb9b8725d0F96635C2b676Ee","sender":"0x13B57382c36BAB566E75C72303622AF29E27e1d3"})`
 - InitializableImmutableAdminUpgradeabilityProxy at `0x83Cb1B4af26EEf6463aC20AFbAC9c0e2E017202F` with implementation PoolConfiguratorInstance at `0x898E245D83Ad255Dc57b04978D0b4A12b94a557F` [:ghost:](https://github.com/aave-dao/aave-address-book  "AaveV3EthereumHorizon.POOL_CONFIGURATOR")
   - `ReserveInitialized({"asset":"0x4E72025984424E52838cf8953E2863eFf036B67A (symbol: mWIN)","aToken":"0x6d094e48Ee2E7C43787aFa0ec5aCcC5F644F976C","stableDebtToken":"0x0000000000000000000000000000000000000000","variableDebtToken":"0x234FaE51A7faF60E19f130A1bb000e3145Bc8bEF","interestRateStrategyAddress":"0x87593272C06f4FC49EC2942eBda0972d2F1Ab521"})`
   - `ReserveInterestRateDataChanged({"asset":"0x4E72025984424E52838cf8953E2863eFf036B67A (symbol: mWIN)","strategy":"0x87593272C06f4FC49EC2942eBda0972d2F1Ab521","data":"0x00000000000000000000000000000000000000000000000000000000000026ac000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"})`
