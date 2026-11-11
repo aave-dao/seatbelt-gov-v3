@@ -73,15 +73,19 @@ export async function simulateSafeBatch(file: string, safeOverride?: Address) {
     `Safe ${safe} on ${chainId}: version ${version}, threshold ${threshold}/${owners.length}, nonce ${nonce}`,
   );
 
-  const multiSendCallOnly = MULTI_SEND_CALL_ONLY[version];
+  // the transaction builder batches through the newest MultiSendCallOnly deployed on the
+  // chain, independently of the safe version, and the safeTxHash has to match the one it shows
+  let multiSendCallOnly: Address | undefined;
   if (batch.transactions.length > 1) {
+    for (const deployment of MULTI_SEND_CALL_ONLY) {
+      if (await client.getCode({ address: deployment })) {
+        multiSendCallOnly = deployment;
+        break;
+      }
+    }
     if (!multiSendCallOnly)
       throw new Error(
-        `no known MultiSendCallOnly deployment for safe version ${version}`,
-      );
-    if (!(await client.getCode({ address: multiSendCallOnly })))
-      throw new Error(
-        `MultiSendCallOnly ${multiSendCallOnly} has no code on chain ${chainId}`,
+        `no MultiSendCallOnly deployment found on chain ${chainId}`,
       );
   }
   const safeTx = buildSafeTransaction(batch.transactions, multiSendCallOnly);

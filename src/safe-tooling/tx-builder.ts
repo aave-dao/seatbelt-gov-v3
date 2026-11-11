@@ -45,11 +45,12 @@ export type TxBuilderBatch = {
   transactions: TxBuilderTransaction[];
 };
 
-// https://github.com/safe-global/safe-deployments (canonical MultiSendCallOnly deployments)
-export const MULTI_SEND_CALL_ONLY: Record<string, Address> = {
-  "1.3.0": "0x40A2aCCbd92BCA938b02010E17A5b8929b49130D",
-  "1.4.1": "0x9641d764fc13c8B624c04430C7356C1C7C8102e2",
-};
+// https://github.com/safe-global/safe-deployments (canonical MultiSendCallOnly deployments, newest first)
+export const MULTI_SEND_CALL_ONLY: Address[] = [
+  "0xA83c336B20401Af773B6219BA5027174338D1836", // 1.5.0
+  "0x9641d764fc13c8B624c04430C7356C1C7C8102e2", // 1.4.1
+  "0x40A2aCCbd92BCA938b02010E17A5b8929b49130D", // 1.3.0
+];
 
 const MULTI_SEND_ABI = [
   {
