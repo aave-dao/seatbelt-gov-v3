@@ -101,11 +101,27 @@ bun simulate -c 1 -i 42 43 44
 bun simulate -c 1 --payloadsController 0x1234...5678 -i 42
 ```
 
+### Simulate a Safe (multisig) transaction batch
+
+Simulate a json batch exported from the [Safe transaction builder](https://help.safe.global/en/articles/40841-transaction-builder) app:
+
+```bash
+bun simulate:safe -f ./path/to/batch.json
+
+# with an explicit safe address (when meta.createdFromSafeAddress is missing)
+bun simulate:safe -f ./path/to/batch.json --safe 0x1234...5678
+```
+
+The batch is simulated through the actual `Safe.execTransaction` path (batched via `MultiSendCallOnly` when it contains more than one transaction), sent by one of the safe owners with the threshold overridden to 1.
+The report includes the `safeTxHash` for the batch at the safe's current nonce, which signers can cross-check against the hash shown in the Safe UI.
+Reports are written to `reports/multisig/{chainId}/{safeAddress}/{fileName}.md`. Only Tenderly mode is supported for safe batches.
+
 ### Available commands
 
 | Command               | Description                              |
 | --------------------- | ---------------------------------------- |
 | `bun simulate`        | Refresh cache and simulate payloads      |
+| `bun simulate:safe`   | Simulate a safe transaction builder json |
 | `bun run ci:tree`     | Refresh the governance tree cache only   |
 | `bun run ci:simulate` | Run simulations without refreshing cache |
 
