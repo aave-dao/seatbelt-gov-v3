@@ -9879,6 +9879,16 @@
           "payloadsController": "0xe76EB348E65eF163d85ce282125FF5a7F5712A1d"
         }
       ]
+    },
+    "543": {
+      "state": 1,
+      "payloads": [
+        {
+          "chain": 43114,
+          "payloadId": 132,
+          "payloadsController": "0x1140CB7CAfAcC745771C2Ea31e7B5C653c5d0B80"
+        }
+      ]
     }
   },
   "payloads": {
@@ -13860,6 +13870,9 @@
         },
         "130": {
           "542": true
+        },
+        "132": {
+          "543": true
         }
       }
     },
