@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import type { StateDiff } from "@aave-dao/toolbox";
 import { MOCK_SIMULATION } from "./mocks/mockSimulation";
 import {
   renderMarkdownStateDiffReport,
@@ -9,7 +10,8 @@ describe("seatbelt:state", () => {
   it("should generate diff", async () => {
     expect(
       transformTenderlyStateDiff(
-        MOCK_SIMULATION.transaction.transaction_info.state_diff,
+        MOCK_SIMULATION.transaction.transaction_info
+          .state_diff as unknown as StateDiff[],
       ),
     ).toMatchInlineSnapshot(`
       {
@@ -547,7 +549,8 @@ describe("seatbelt:state", () => {
     expect(
       renderMarkdownStateDiffReport(
         transformTenderlyStateDiff(
-          MOCK_SIMULATION.transaction.transaction_info.state_diff,
+          MOCK_SIMULATION.transaction.transaction_info
+            .state_diff as unknown as StateDiff[],
         ),
       ),
     ).toMatchInlineSnapshot(`

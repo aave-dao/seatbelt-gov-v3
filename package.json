@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "simulate": "bun src/cache/refreshTree.ts && bun src/index.ts",
+    "simulate:safe": "bun src/safe.ts",
     "ci:tree": "bun src/cache/refreshTree.ts",
     "ci:simulate": "bun src/index.ts",
     "test": "vitest src"

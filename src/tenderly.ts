@@ -77,7 +77,10 @@ export async function simulateOnTenderly({
         forkChainId: chainId,
         displayName: `Seatbelt ${chainId} ${payloadId}`,
         slug: `seatbelt-${chainId}-${payloadId}-${Date.now().toString(36)}`,
-        blockNumber: blockNumber === -2 ? "latest" : blockNumber,
+        // the tenderly api accepts "latest" or a block number, the toolbox typing only a hex string
+        blockNumber: (blockNumber === -2
+          ? "latest"
+          : blockNumber) as unknown as Hex,
         force: false,
       },
       tenderlyConfig,
@@ -232,6 +235,6 @@ export async function simulateOnTenderly({
   }
 }
 
-function flagAsKnown(value: string, reference: string) {
+export function flagAsKnown(value: string, reference: string) {
   return `${value} [:ghost:](https://github.com/aave-dao/aave-address-book  "${reference}")`;
 }
