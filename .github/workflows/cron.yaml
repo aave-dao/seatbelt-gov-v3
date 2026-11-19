@@ -63,6 +63,7 @@ jobs:
   payloads:
     needs: [tree]
     strategy:
+      fail-fast: false
       matrix:
         chainId:
           [
@@ -167,6 +168,7 @@ jobs:
 
   report:
     needs: ["payloads"]
+    if: ${{ !cancelled() }}
     name: Commit actual changes
     runs-on: ubuntu-latest
     steps:
