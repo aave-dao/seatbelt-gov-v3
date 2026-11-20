@@ -18,7 +18,10 @@ import {
 } from "./tenderly-tooling/payloads-controller";
 
 // https://docs.tenderly.co/supported-networks
-export const CHAIN_NOT_SUPPORTED_ON_TENDERLY: number[] = [ChainId.zkEVM];
+export const CHAIN_NOT_SUPPORTED_ON_TENDERLY: number[] = [
+  ChainId.zkEVM,
+  ChainId.metis,
+];
 export const NO_V_NET: number[] = [ChainId.zksync];
 export const UNCAPPED_GAS_LIMIT_CHAINS: number[] = [
   ChainId.mantle,
