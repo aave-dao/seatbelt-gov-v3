@@ -1,0 +1,19 @@
+reports/multisig/1/0x13B57382c36BAB566E75C72303622AF29E27e1d3/horizon-mwin-hinc-listing.md
+  s_2bc10e7d26489f::t_d2c9622abee89c 1,4-6,8-12,133-144,163,167,425,429,469,473,493,495,502-504
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "5751c0fa36ed6f2a80705a63c2a47a8da9a08d41",
+  "prompts": {},
+  "sessions": {
+    "s_2bc10e7d26489f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "c17fbce8-c529-4890-a816-221a667180e8",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Alexandru Niculae <43644109+avniculae@users.noreply.github.com>"
+    }
+  }
+}

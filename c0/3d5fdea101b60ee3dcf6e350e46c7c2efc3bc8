@@ -1,0 +1,29 @@
+src/tenderly.ts
+  s_ad44f2766ae659::t_8154532a027dc4 61-68,90,218-263,272-275
+  s_ad44f2766ae659::t_cc1ab6af499b8a 9,14-17,98,115,118,166-167,170,190,197-198,200-202,207-217,264-271,276-277
+  s_ad44f2766ae659::t_96a99f8e13c3f2 171-189
+  s_ad44f2766ae659::t_26d8b507fd5bdb 278
+src/tenderly-tooling/tenderly-report.ts
+  s_ad44f2766ae659::t_c0761215c538e9 133-139
+  s_ad44f2766ae659::t_8c9ebab6e2e96e 52-54,57
+  s_ad44f2766ae659::t_301962a2f82f1d 68-69,71-73
+  s_ad44f2766ae659::t_8154532a027dc4 78-79
+  s_ad44f2766ae659::t_0e646bfdefd16a 92
+  s_ad44f2766ae659::t_08ed0f8f747675 58
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "c03d5fdea101b60ee3dcf6e350e46c7c2efc3bc8",
+  "prompts": {},
+  "sessions": {
+    "s_ad44f2766ae659": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3f6e3421-9007-4063-99df-19c6c3230880",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "DhairyaSethi <55102840+DhairyaSethi@users.noreply.github.com>"
+    }
+  }
+}

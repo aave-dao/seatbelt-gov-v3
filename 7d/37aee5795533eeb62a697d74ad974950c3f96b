@@ -1,0 +1,26 @@
+src/tenderly-tooling/safe-report.ts
+  s_2bc10e7d26489f::t_315061b8042a71 44
+src/tenderly-tooling/tenderly-report.ts
+  s_2bc10e7d26489f::t_2139830ee4678b 1-11,206-212,258,264,276,288,302,318-390
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "7d37aee5795533eeb62a697d74ad974950c3f96b",
+  "prompts": {},
+  "humans": {
+    "h_0f977de3f043fc": {
+      "author": "Alexandru Niculae <43644109+avniculae@users.noreply.github.com>"
+    }
+  },
+  "sessions": {
+    "s_2bc10e7d26489f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "c17fbce8-c529-4890-a816-221a667180e8",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Alexandru Niculae <43644109+avniculae@users.noreply.github.com>"
+    }
+  }
+}
