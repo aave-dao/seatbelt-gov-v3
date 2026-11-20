@@ -1,0 +1,19 @@
+src/tenderly.ts
+  s_27070cf0ae3899::t_c6553d34356ffa 21-24
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "d173d0099af600e5f48318a361ec5993b45d6ccb",
+  "prompts": {},
+  "sessions": {
+    "s_27070cf0ae3899": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "c0b34d16-8be4-488b-bc86-602f235678e9",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "DhairyaSethi <55102840+DhairyaSethi@users.noreply.github.com>"
+    }
+  }
+}
